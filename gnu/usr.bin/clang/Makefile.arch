@@ -5,6 +5,8 @@ LLVM_ARCHS=AArch64 AMDGPU ARM Mips PowerPC Sparc X86
 LLVM_ARCH?=
 .if ${MACHINE_ARCH} == "amd64" || ${MACHINE_ARCH} == "i386"
 LLVM_ARCH=	X86
+.elif ${MACHINE_ARCH} == "powerpc64"
+LLVM_ARCH=	PowerPC
 .elif ${MACHINE_ARCH} == "powerpc"
 LLVM_ARCH=	PowerPC
 .elif ${MACHINE_ARCH} == "sparc64"
