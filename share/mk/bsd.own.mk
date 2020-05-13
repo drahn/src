@@ -15,13 +15,17 @@ SKEY?=		yes
 # Set `YP' to `yes' to build with support for NIS/YP.
 YP?=		yes
 
-CLANG_ARCH=aarch64 amd64 arm i386 mips64 mips64el powerpc sparc64
+CLANG_ARCH=aarch64 amd64 arm i386 mips64 mips64el powerpc powerpc64 sparc64
 GCC4_ARCH=alpha hppa mips64el sh sparc64
 GCC3_ARCH=m88k
-LLD_ARCH=aarch64 amd64 arm i386
+LLD_ARCH=aarch64 amd64 arm i386 powerpc64
 
 .if ${MACHINE} == "sgi"
 GCC4_ARCH+=mips64
+.endif
+
+.if ${MACHINE_ARCH} == "powerpc64"
+NOPIC=
 .endif
 
 # m88k: ?
@@ -142,14 +146,14 @@ STATIC?=	-static ${STATICPIE}
 
 # pic relocation flags.
 .if ${MACHINE_ARCH} == "alpha" || ${MACHINE_ARCH} == "powerpc" || \
-    ${MACHINE_ARCH} == "sparc64"
+    ${MACHINE_ARCH} == "powerpc64" || ${MACHINE_ARCH} == "sparc64"
 PICFLAG?=-fPIC
 .else
 PICFLAG?=-fpic
 .endif
 
 .if ${MACHINE_ARCH} == "alpha" || ${MACHINE_ARCH} == "powerpc" || \
-    ${MACHINE_ARCH} == "sparc64"
+    ${MACHINE_ARCH} == "powerpc64" || ${MACHINE_ARCH} == "sparc64"
 # big PIE
 DEFAULT_PIE_DEF=-DPIE_DEFAULT=2
 .else
