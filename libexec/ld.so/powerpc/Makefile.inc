@@ -5,4 +5,7 @@ CFLAGS += -fno-jump-tables
 CFLAGS += -fPIC -msoft-float
 LD_SCRIPT = ${.CURDIR}/${MACHINE_CPU}/ld.script
 
+# Suppress DWARF2 warnings
+DEBUG?= -gdwarf-4
+
 RELATIVE_RELOC=R_PPC_RELATIVE
