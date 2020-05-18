@@ -39,7 +39,7 @@ CXXFLAGS+=	-fomit-frame-pointer
 .endif
 
 # Compiling with -fno-pie doesn't work on powerpc.
-.if ${MACHINE_ARCH} == "powerpc" || ${MACHINE_ARCH} == "powerpc64"
+.if ${MACHINE_ARCH} == "powerpc"
 NOPIE_FLAGS=	-fPIE
 .endif
 
