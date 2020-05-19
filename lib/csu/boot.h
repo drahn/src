@@ -44,10 +44,6 @@
 
 #include "syscall.h"
 #include "archdep.h"
-#include "path.h"
-#include "resolve.h"
-#include "sod.h"
-#include "stdlib.h"
 
 /*
  * Use the internal, hidden name for any syscalls we need, to avoid
