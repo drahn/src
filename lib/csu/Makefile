@@ -37,6 +37,10 @@ RCFLAGS+=-fno-stack-protector
 RCFLAGS+=-fno-builtin
 .endif
 
+.if ${MACHINE_CPU} == "powerpc64"
+RCFLAGS+= -mno-vsx -mno-altivec
+.endif
+
 # Prevent use of jump tables in _dl_boot_bind().
 .if ${MACHINE_CPU} == "mips64" || ${MACHINE_CPU} == "powerpc"
 RCFLAGS+=-fno-jump-tables
