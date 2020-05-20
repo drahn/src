@@ -199,6 +199,9 @@ static PPCTargetMachine::PPCABI computeTargetABI(const Triple &TT,
   case Triple::ppc64le:
     return PPCTargetMachine::PPC_ABI_ELFv2;
   case Triple::ppc64:
+    // even for big endian OpenBSD uses ELF v2 
+    if (TT.isOSOpenBSD())
+      return PPCTargetMachine::PPC_ABI_ELFv2;
     return PPCTargetMachine::PPC_ABI_ELFv1;
   default:
     return PPCTargetMachine::PPC_ABI_UNKNOWN;
