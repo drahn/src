@@ -920,6 +920,7 @@ tools::ParsePICArgs(const ToolChain &ToolChain, const ArgList &Args) {
     case llvm::Triple::aarch64:
     case llvm::Triple::mips64:
     case llvm::Triple::mips64el:
+    case llvm::Triple::ppc64:
     case llvm::Triple::x86:
     case llvm::Triple::x86_64:
       IsPICLevelTwo = false; // "-fpie"
