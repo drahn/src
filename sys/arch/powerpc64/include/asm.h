@@ -79,10 +79,12 @@
 _TMP_LABEL(y):; \
 	.long 0; \
 	.section ".text"; \
+	addis %r2, %r12, .TOC.-_C_LABEL(y)@ha; \
+	addi %r2, %r2, .TOC.-_C_LABEL(y)@l; \
 	mflr %r0; \
-	addis %r11, %r11, _TMP_LABEL(y)@ha; \
+	addis %r11, %r11, _TMP_LABEL(y)@toc@ha; \
 	std %r0, 8(%r1); \
-	addi %r0, 11,_TMP_LABEL(y)@l; \
+	addi %r0, 11,_TMP_LABEL(y)@toc@l; \
 	bl _mcount; 
 #else
 # define _PROF_PROLOGUE(y)
