@@ -34,7 +34,7 @@
 /* powerpc offsets the TCB pointer 0x7000 bytes after the data */
 #define TCB_OFFSET	0x7000
 
-register void *__tcb __asm__ ("r2");
+register void *__tcb __asm__ ("r13");
 #define TCB_GET()		(__tcb)
 #define TCB_SET(tcb)		((__tcb) = (tcb))
 
