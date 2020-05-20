@@ -46,9 +46,9 @@
 static inline void
 _dl_dcbf(Elf_Addr *addr)
 {
-	__asm__ volatile ("dcbst 0, %0\n\t"
+	__asm__ volatile ("dcbst %%r0, %0\n\t"
 	    "sync\n\t"
-	    "icbi %r0, %0\n\t"
+	    "icbi %%r0, %0\n\t"
 	    "sync\n\t"
 	    "isync"
 	    : : "r" (addr) : "0");
