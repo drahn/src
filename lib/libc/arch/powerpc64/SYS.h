@@ -51,7 +51,7 @@
 #define	TCB_OFFSET		0x7000
 
 /* offset of errno from %r2 */
-#define	R2_OFFSET_ERRNO		(-TCB_OFFSET + TCB_OFFSET_ERRNO)
+#define	R13_OFFSET_ERRNO		(-TCB_OFFSET + TCB_OFFSET_ERRNO)
 
 /*
  * We define a hidden alias with the prefix "_libc_" for each global symbol
@@ -82,8 +82,8 @@
 				li 0, SYS_##y ; \
 				/* sc */
 #define PSEUDO_SUFFIX		cmpwi 0, 0 ; \
-				beqlr+ ; \
-				stw	0, R2_OFFSET_ERRNO(2); \
+				bnslr ; \
+				stw	0, R13_OFFSET_ERRNO(13); \
 				li	3, -1; \
 				li	4, -1; /* for __syscall(lseek) */ \
 				blr

@@ -52,11 +52,17 @@
 #define JMP_ctr	0xb0
 #define JMP_xer	0xb8
 #define JMP_sig	0xc0
+#define JMP_sigmask   0xc8
+
 
 	.extern	__jmpxor
 
 /* int sigsetjmp(sigjmp_buf env, int savemask) */
 ENTRY(sigsetjmp)
+.Lsigsetjmp_gep0:
+	addis %r2, %r12, .TOC.-(.Lsigsetjmp_gep0)@ha; 
+	addi %r2, %r2, .TOC.-(.Lsigsetjmp_gep0)@l;
+
 	mr	%r5, %r3		/* save jmpbuf addr in r5 */
 	std	%r4, JMP_sigflag(%r5)
 	or.	%r4, %r4, %r4
@@ -66,12 +72,11 @@ ENTRY(sigsetjmp)
 	li	%r0, SYS_sigprocmask
 	sc
 	std	%r3, JMP_sigmask(5)
-1:	mflr	%r6
-	bcl	20, 31, 2f
-2:	mflr	%r7
-	addis	%r7, %r7, __jmpxor-2b@ha
-	addi	%r7, %r7, __jmpxor-2b@l
-	mtlr	%r6
+
+	addis	%r7, %r2, __jmpxor@got@ha
+	addi	%r7, %r7, __jmpxor@got@l
+
+	mflr	%r6
 	ld	%r0, 0(%r7)		/* xor for r1 */
 	ld	%r7, 4(%r7)		/* xor for lr, overwrite addr */
 
@@ -114,6 +119,10 @@ END(sigsetjmp)
 
 /* int siglongjmp(sigjmp_buf env, int val) */
 ENTRY(siglongjmp)
+.Lsiglongjmp_gep0:
+	addis %r2, %r12, .TOC.-(.Lsiglongjmp_gep0)@ha; 
+	addi %r2, %r2, .TOC.-(.Lsiglongjmp_gep0)@l;
+
 	mr	%r5, %r3		/* save jmpbuf addr in r5 */
 	mr	%r6, %r4		/* save val in r6 */
 	ld	%r4, JMP_sigflag(%r5)	/* do we need to restore sigmask? */
@@ -124,11 +133,9 @@ ENTRY(siglongjmp)
 	ld	%r4, JMP_sigmask(%r5)	/* oset from the jmpbuf */
 	li	%r0, SYS_sigprocmask
 	sc
-
-1:	bcl	20, 31, 2f
-2:	mflr	%r9
-	addis	%r9, %r9, __jmpxor-2b@ha
-	addi	%r9, %r9, __jmpxor-2b@l
+1:
+	addis	%r9, %r2, __jmpxor@got@ha
+	addi	%r9, %r9, __jmpxor@got@l
 	lwz	%r8, 0(%r9)		/* xor for r1 */
 	lwz	%r9, 4(%r9)		/* xor for lr, overwrite addr */
 

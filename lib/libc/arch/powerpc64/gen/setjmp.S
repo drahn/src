@@ -73,12 +73,12 @@ ENTRY(setjmp)
 	std	3, JMP_sig(5)
 	mr	3, 5
 ENTRY(_setjmp)
-	mflr	6
-	bcl	20, 31, 1f
-1:	mflr	7
-	addis	7, 7, __jmpxor-1b@ha
-	addi	7, 7, __jmpxor-1b@l
-	mtlr	6
+.Lsetjmp_gep0:
+	addis %r2, %r12, .TOC.-(.Lsetjmp_gep0)@ha; 
+	addi %r2, %r2, .TOC.-(.Lsetjmp_gep0)@l;
+
+	addis	7, 2, __jmpxor@got@ha
+	addi	7, 7, __jmpxor@got@l
 	ld	0, 0(7)			/* xor for r1 */
 	ld	7, 4(7)			/* xor for lr, overwrite addr */
 
@@ -131,10 +131,12 @@ ENTRY(longjmp)
 	mr	%r4, %r6
 
 ENTRY(_longjmp)
-	bcl	20, 31, 1f
-1:	mflr	%r9
-	addis	%r9, %r9, __jmpxor-1b@ha
-	addi	%r9, %r9, __jmpxor-1b@l
+.Llongjmp_gep0:
+	addis %r2, %r12, .TOC.-(.Llongjmp_gep0)@ha; 
+	addi %r2, %r2, .TOC.-(.Llongjmp_gep0)@l;
+
+	addis	%r9, %r9, __jmpxorb@got@ha
+	addi	%r9, %r9, __jmpxor@got@l
 	ld	8, 0(9)			/* xor for r1 */
 	ld	9, 4(9)			/* xor for lr, overwrite addr */
 
