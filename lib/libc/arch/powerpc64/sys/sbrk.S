@@ -40,20 +40,14 @@ __curbrk:
 
 	.text
 PSEUDO_PREFIX(,sbrk,break)
+.Lbrk_gep0:
+	addis %r2, %r12, .TOC.-(.Lbrk_gep0)@ha; 
+	addi %r2, %r2, .TOC.-(.Lbrk_gep0)@l;
 	
 	/* call break(__curbrk + size) */
-#ifndef __PIC__
-	addis	6, 0, __curbrk@H
-	ori	6, 6, __curbrk@L	/* # 6 = &__curbrk */
-#else
-	mflr	10
-	bcl	20, 31, 1f
-1:	mflr	9
-	addis	9, 9, _GLOBAL_OFFSET_TABLE_-1b@ha
-	addi	9, 9, _GLOBAL_OFFSET_TABLE_-1b@l
-	mtlr	10
-	lwz	6,__curbrk@got(9)
-#endif
+	addis	6, 2, __curbrk@got@ha
+	addi	6, 6, __curbrk@got@l	/* # 6 = &__curbrk */
+
 	lwz	5, 0(6)		/* # 5 = *6 (old_curbrk) */
 	add	3, 5, 3		/* # 3 = new_curbrk */
 	mr	7, 3
@@ -63,7 +57,7 @@ PSEUDO_PREFIX(,sbrk,break)
 	/* check for error */
 	cmpwi	0, 0
 	beq+	.L_sbrk_ok
-	stw	0, R2_OFFSET_ERRNO(2)
+	stw	0, R13_OFFSET_ERRNO(13)
 	li	3, -1
 	blr
 

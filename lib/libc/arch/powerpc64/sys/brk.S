@@ -33,20 +33,14 @@
 	.weak	brk
 
 PSEUDO_PREFIX(,brk,break)
+.Lbrk_gep0:
+	addis %r2, %r12, .TOC.-(.Lbrk_gep0)@ha; 
+	addi %r2, %r2, .TOC.-(.Lbrk_gep0)@l;
 	
 	/* check >= _end, if not make the call for _end */
-#ifndef __PIC__
-	addis 5,0,_C_LABEL(_end)@h
-	ori  5,5,_C_LABEL(_end)@l		/* # 5 = &_end */
-#else
-	mflr	10
-	bcl	20, 31, 1f
-1:	mflr	9
-	addis	9, 9, _GLOBAL_OFFSET_TABLE_-1b@ha
-	addi	9, 9, _GLOBAL_OFFSET_TABLE_-1b@l
-	mtlr	10
-	lwz	5,_C_LABEL(_end)@got(9)
-#endif
+	addis 5,2,_C_LABEL(_end)@got@ha
+	addi  5,5,_C_LABEL(_end)@got@l		/* # 5 = &_end */
+
 	cmplw	3,5
 	bge+	.L_brk_call
 	mr	3, 5
@@ -54,19 +48,15 @@ PSEUDO_PREFIX(,brk,break)
 .L_brk_call:
 	mr	7, 3
 	/* call break(size) */
-#ifndef __PIC__
-	addis	6, 0, __curbrk@H
-	ori	6, 6, __curbrk@L	/* # 6 = &__curbrk */
-#else
-	lwz	6,__curbrk@got(9)
-#endif
+	addis	6, 2, __curbrk@got@ha
+	addi	6, 6, __curbrk@got@l	/* # 6 = &__curbrk */
 
 	sc
 
 	/* check for error */
 	cmpwi	0, 0
 	beq+	.L_brk_ok	/* OK so this is stupid but I haven't read b */
-	stw	0, R2_OFFSET_ERRNO(2)
+	stw	0, R13_OFFSET_ERRNO(13)
 	li	3, -1
 	blr
 

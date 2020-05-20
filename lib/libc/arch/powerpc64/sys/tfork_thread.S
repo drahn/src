@@ -39,7 +39,7 @@ ENTRY(__tfork_thread)
 	li	%r0, SYS___threxit
 	sc
 1:
-	stw	%r0, R2_OFFSET_ERRNO(%r2)
+	stw	%r0, R13_OFFSET_ERRNO(%r13)
 	li	%r3, -1
 	blr
 END(__tfork_thread)

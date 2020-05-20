@@ -49,7 +49,7 @@ PREFIX_HIDDEN(sigprocmask)
 	/* didnt work? */
 	cmpwi	0, 0
 	beq+	.L_sigprocmask_ok
-	stw	0, R2_OFFSET_ERRNO(2)
+	stw	0, R13_OFFSET_ERRNO(13)
 	li	3, -1
 	blr
 
