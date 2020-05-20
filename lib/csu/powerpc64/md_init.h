@@ -104,14 +104,14 @@ __asm(									\
 "									\n" \
 "	bcl	20, 31, 1f						\n" \
 "1:	mflr	%r18							\n" \
-"	addis	%r18, %r18, _DYNAMIC-1b@ha				\n" \
-"	addi	%r18, %r18, _DYNAMIC-1b@l				\n" \
+"	addis	%r18, %r2, _DYNAMIC@got@ha				\n" \
+"	addi	%r18, %r18, _DYNAMIC@got@l				\n" \
 "									\n" \
 "	subi	%r3, %r21, 4	# Get stack pointer (arg0 for _dl_boot). \n" \
 "	addi	%r4, %r1, 8	# dl_data				\n" \
 "	mr	%r5, %r18	# dynamicp				\n" \
 "									\n" \
-"	bl	_dl_boot_bind@local					\n" \
+"      bl      _dl_boot_bind						\n" \
 "									\n" \
 "	mtlr %r27							\n" \
 "	# move argument registers back from saved registers		\n" \
