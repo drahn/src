@@ -99,4 +99,11 @@ __swapm64(volatile __uint64_t *m, __uint64_t v)
 #include <sys/endian.h>
 #endif
 
+#if _BYTE_ORDER == _BIG_ENDIAN
+#define __bemtoh16(_x) (*_x)
+#define __bemtoh32(_x) (*_x)
+#define __bemtoh64(_x) (*_x)
+#endif /* _BYTE_ORDER == _BIG_ENDIAN */
+
+
 #endif /* _MACHINE_ENDIAN_H_ */

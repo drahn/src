@@ -39,6 +39,8 @@
 #include <sys/device.h>
 #include <sys/sched.h>
 
+#include <sys/time.h>
+
 struct cpu_info {
 	struct device	*ci_dev;
 	struct cpu_info	*ci_next;
