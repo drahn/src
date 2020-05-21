@@ -60,6 +60,8 @@ ARCH_SRCS = e_sqrt.c e_sqrtf.c s_fabsf.c
 .PATH:	${.CURDIR}/arch/mips64
 .elif (${MACHINE_ARCH} == "powerpc")
 .PATH:	${.CURDIR}/arch/powerpc
+.elif (${MACHINE_ARCH} == "powerpc64")
+.PATH:	${.CURDIR}/arch/powerpc64
 .elif (${MACHINE_ARCH} == "sparc64")
 .PATH:	${.CURDIR}/arch/sparc64
 ARCH_SRCS = e_sqrtl.c
@@ -137,6 +139,7 @@ SRCS+=		${LONG_SRCS}
 .endif
 .if (${MACHINE_CPU} == "mips64") || (${MACHINE_ARCH} == "sparc64") || \
     (${MACHINE_ARCH} == "aarch64")
+# || (${MACHINE_ARCH} == "powerpc64")
 .PATH:		${.CURDIR}/src/ld128
 CPPFLAGS+=	-I${.CURDIR}/src -I${.CURDIR}/src/ld128
 SRCS+=		${LONG_SRCS}

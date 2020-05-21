@@ -1,11 +1,18 @@
 #ifndef _MACHINE_CPU_H_
 #define _MACHINE_CPU_H_
 
+#ifdef _KERNEL
+/*
+ * Kernel-only definitions
+ */
+
 #include <machine/intr.h>
 #include <machine/frame.h>
 
 #include <sys/device.h>
 #include <sys/sched.h>
+
+#include <sys/time.h>
 
 struct cpu_info {
 	struct device	*ci_dev;
@@ -61,5 +68,26 @@ void delay(u_int);
 
 #define intr_disable()		0
 #define intr_restore(s)		do {} while (0)
+
+/* PSL Process Status  */
+inline uint32_t 
+ppc_mfmsr()
+{
+	uint32_t msr;
+        asm volatile ("mfmsr %0" : "=r" (msr));
+	return msr;
+}
+inline void
+ppc_mtmsr(uint32_t msr)
+{
+        asm volatile ("mtmsr %0" :: "r" (msr));
+}
+
+#define	PSL_EE		0x00008000
+#define	PSL_SE		0x00000400
+#define	PSL_DR		0x00000010
+#define	PSL_IR		0x00000020
+
+#endif /* _KERNEL */
 
 #endif /* _MACHINE_CPU_H_ */

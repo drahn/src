@@ -125,7 +125,7 @@ _dl_md_reloc(elf_object_t *object, int rel, int relasz)
 		}
 
 		switch (type) {
-		case RELOC_64:
+		case RELOC_ADDR64: //RELOC_64:
 			if (ELF_ST_BIND(sym->st_info) == STB_LOCAL &&
 			    (ELF_ST_TYPE(sym->st_info) == STT_SECTION ||
 			    ELF_ST_TYPE(sym->st_info) == STT_NOTYPE) ) {
@@ -162,7 +162,7 @@ _dl_md_reloc(elf_object_t *object, int rel, int relasz)
 			    relas->r_addend - (Elf_Addr)r_addr;
 			if (!B24_VALID_RANGE(val)) {
 				/* invalid offset */
-				_dl_die("%s: invalid %s offset %x at %p",
+				_dl_die("%s: invalid %s offset %llx at %p",
 				    object->load_name, "REL24", val,
 				    (void *)r_addr);
 			}
@@ -220,7 +220,7 @@ _dl_md_reloc(elf_object_t *object, int rel, int relasz)
 			if (((val & 0xffff8000) != 0) &&
 			    ((val & 0xffff8000) != 0xffff8000)) {
 				/* invalid offset */
-				_dl_die("%s: invalid %s offset %x at %p",
+				_dl_die("%s: invalid %s offset %llx at %p",
 				    object->load_name, "REL14", val,
 				    (void *)r_addr);
 			}
@@ -253,7 +253,7 @@ _dl_md_reloc(elf_object_t *object, int rel, int relasz)
 			break;
 
 		default:
-			_dl_die("%s: unsupported relocation '%s' %d at %p\n",
+			_dl_die("%s: unsupported relocation '%s' %lld at %p\n",
 			    object->load_name, symn,
 			    ELF_R_TYPE(relas->r_info), (void *)r_addr );
 		}
