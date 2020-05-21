@@ -29,6 +29,8 @@ scalblnf(float x, long n)
 		return scalbnf(x, (int)n);
 }
 
+#if !defined(__powerpc64__)
+
 long double
 scalblnl(long double x, long n)
 {
@@ -40,3 +42,4 @@ scalblnl(long double x, long n)
 		return scalbnl(x, (int)n);
 }
 
+#endif /* XXX - not for powerpc64 ? */
