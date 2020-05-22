@@ -78,6 +78,7 @@ __asm(									\
 "__start:								\n" \
 "	# put cleanup in r6 instead of r7				\n" \
 "	mr %r6, %r7							\n" \
+"	li	%r12, 0							\n" \
 "	b ___start							\n" \
 )
 
@@ -92,6 +93,14 @@ __asm(									\
 "	.type	__start, @function					\n" \
 "_start:								\n" \
 "__start:								\n" \
+"	bl	1f							\n" \
+"1:									\n" \
+"	mflr	%r30							\n" \
+"	ld	=2f							\n" \
+"	addis	%r2, %r30, .TOC.-1b@ha					\n" \
+"	addi	%r2, %r2, .TOC.-1b@ha					\n" \
+"	addis	%r12, %r2, 1b@got@ha					\n" \
+"	addi	%r12, %r12, 1b@got@l					\n" \
 "	mr	%r19, %r1		# save stack in r19		\n" \
 "	stdu	1, (-16 -((9+3)*4))(%r1) # allocate dl_data		\n" \
 "									\n" \
