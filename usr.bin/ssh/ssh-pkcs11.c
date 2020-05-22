@@ -1819,7 +1819,8 @@ out:
 #endif /* WITH_PKCS11_KEYGEN */
 #else
 int
-pkcs11_add_provider(char *provider_id, char *pin, struct sshkey ***keyp)
+pkcs11_add_provider(char *provider_id, char *pin, struct sshkey ***keyp,
+    char ***labelsp)
 {
 	error("dlopen() not supported");
 	return (-1);
