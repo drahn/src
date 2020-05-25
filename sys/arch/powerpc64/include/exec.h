@@ -27,4 +27,8 @@
 #define ELF_TARG_DATA		ELFDATA2MSB
 #define ELF_TARG_MACH		EM_PPC64
 
+#define DT_PPC_GOT		0x70000000
+
+#define DT_PROCNUM		(DT_PPC_GOT - DT_LOPROC + 1)
+
 #endif
