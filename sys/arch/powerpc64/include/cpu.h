@@ -1,11 +1,18 @@
 #ifndef _MACHINE_CPU_H_
 #define _MACHINE_CPU_H_
 
+#ifdef _KERNEL
+/*
+ * Kernel-only definitions
+ */
+
 #include <machine/intr.h>
 #include <machine/frame.h>
 
 #include <sys/device.h>
 #include <sys/sched.h>
+
+#include <sys/time.h>
 
 struct cpu_info {
 	struct device	*ci_dev;
@@ -64,5 +71,7 @@ void delay(u_int);
 
 #define intr_disable()		0
 #define intr_restore(s)		do {} while (0)
+
+#endif /* _KERNEL */
 
 #endif /* _MACHINE_CPU_H_ */
