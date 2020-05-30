@@ -31,8 +31,8 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef	_POWERPC_RELOC_H_
-#define	_POWERPC_RELOC_H_
+#ifndef	_POWERPC64_RELOC_H_
+#define	_POWERPC64_RELOC_H_
 
 /*
  * Quite a number of relocation types
@@ -121,4 +121,4 @@ enum reloc_type {
 	RELOC_MAX
 };
 
-#endif	/* _POWERPC_RELOC_H_ */
+#endif	/* _POWERPC64_RELOC_H_ */
