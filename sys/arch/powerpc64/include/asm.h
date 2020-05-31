@@ -35,32 +35,7 @@
 #ifndef _POWERPC_ASM_H_
 #define _POWERPC_ASM_H_
 
-/* XXX */
-#define TARGET_ELF
-
-#ifdef __PIC__
-#define PIC_PROLOGUE	XXX
-#define PIC_EPILOGUE	XXX
-#ifdef	__STDC__
-#define PIC_PLT(x)	x ## @plt
-#define PIC_GOT(x)	XXX
-#define PIC_GOTOFF(x)	XXX
-#else	/* not __STDC__ */
-#define PIC_PLT(x)	x/**/@plt
-#define PIC_GOT(x)	XXX
-#define PIC_GOTOFF(x)	XXX
-#endif	/* __STDC__ */
-#else
-#define PIC_PROLOGUE
-#define PIC_EPILOGUE
-#define PIC_PLT(x)	x
-#define PIC_GOT(x)	x
-#define PIC_GOTOFF(x)	x
-#endif
-
-#ifdef TARGET_ELF
-# define _C_LABEL(x)	x
-#endif
+#define _C_LABEL(x)	x
 #define	_ASM_LABEL(x)	x
 
 #ifdef __STDC__
@@ -73,7 +48,6 @@
 # define _LEP_LABEL(x)  .L_/**/x/**/_lep0
 #endif
 
-
 #define _ENTRY(x)						\
 	.text; .align 2; .globl x; .type x,@function; x:	\
 	_GEP_LABEL(x):						\
@@ -81,8 +55,6 @@
 	addi %r2, %r2, .TOC.-_GEP_LABEL(x)@l;			\
 	_LEP_LABEL(x):						\
 	.localentry     _C_LABEL(x), _LEP_LABEL(x)-_GEP_LABEL(x);
-
-
 
 #if defined(PROF) || defined(GPROF)
 # define _PROF_PROLOGUE(y)					\
