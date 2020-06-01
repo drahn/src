@@ -409,12 +409,21 @@ HDRS_GEN=\
 prereq: obj_mac.h
 
 check_includes: prereq
+.if !defined(CROSSDIR)
 	@cd ${.CURDIR}; for i in $(HDRS) $(HDRS_GEN); do \
 	    j="cmp -s $$i ${DESTDIR}/usr/include/openssl/`basename $$i` || \
 		(echo \"`basename $$i` differs from installed version; \" \
 	        \"did you forget 'make includes'?\" && false)"; \
 	    eval "$$j"; \
 	done;
+.else
+	@cd ${.CURDIR}; for i in $(HDRS) $(HDRS_GEN); do \
+	    j="cmp -s $$i ${CROSSDIR}/usr/include/openssl/`basename $$i` || \
+		(echo \"`basename $$i` differs from installed version; \" \
+	        \"did you forget 'make includes'?\" && false)"; \
+	    eval "$$j"; \
+	done;
+.endif
 
 all: check_includes
 
