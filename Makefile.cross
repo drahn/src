@@ -127,6 +127,11 @@ NO_CROSS+=nsd
 NO_CROSS+=bind
 NO_CROSS+=unbound
 
+# powerc64 cannot deal with ld128 variables yet.
+.if ${TARGET_ARCH} == "powerpc64" 
+NO_CROSS+=isakmpd unwind tcpbench
+.endif
+
 cross-dirs:	${CROSSDIRS}
 cross-obj:	${CROSSOBJ}
 cross-includes:	${CROSSINCLUDES}
