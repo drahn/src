@@ -40,30 +40,26 @@ _dl_start:
 1:
 	mflr	%r30
 	addis   %r2, %r30, .TOC.-1b@ha
-	addi    %r2, %r2, .TOC.-1b@ha
-	addis   %r12, %r2, 1b@got@ha
-	addi    %r12, %r12, 1b@got@l
+	addi    %r2, %r2, .TOC.-1b@l
 
-	mr	%r19, %r1
-	stdu	%r1, (-16 -((AUX_entry+3)*4))(1)	# Some space.
-
-	mflr	%r27		/* save off old link register */
-	std	%r27, 4(%r19)	/* save in normal location */
+	stdu	%r1, (-16 -((AUX_entry+3)*8))(1)	# Some space.
 
 	# squirrel away the arguments for main
 	mr	%r20, %r3	#argc
 	mr	%r21, %r4	#argv
 	mr	%r22, %r5	#envp
 	mr	%r23, %r6	# ???
+	nop
 
-	addis	%r18, %r2, _DYNAMIC@got@ha
-	addi	%r18, %r18, _DYNAMIC@got@l
-	ld	%r4, 0(%r30)	# load address of _DYNAMIC according to got.
-	sub	%r4, %r18, %r4	# determine load offset
+	addis	%r18, %r2,  _DYNAMIC@toc@ha
+	addi	%r18, %r18, _DYNAMIC@toc@l
+
+	ld	%r4,  -0x8000(%r2) # First entry of TOC is TOC base
+	sub	%r4,  %r2, %r4	# determine load offset
 
 	mr	%r17, %r4		# save for _dl_boot
 
-	subi	%r3, %r21, 4	# Get stack pointer (arg0 for _dl_boot).
+	subi	%r3, %r21, 8	# Get stack pointer (arg0 for _dl_boot).
 	addi	%r4, %r1, 8		# dl_data
 	mr	%r5, %r18		# dynamicp
 
@@ -84,7 +80,8 @@ _dl_start:
 	mr	%r5, %r22
 	mr	%r6, %r23
 
-	ld	%r7, _dl_dtors@got(30)
+	addis	%r7, %r2, _dl_dtors@toc@ha
+	addi	%r7, %r7, _dl_dtors@toc@l
 
 	mtlr	%r27
 	ld	%r1, 0(%r1)		# Restore stack pointer.

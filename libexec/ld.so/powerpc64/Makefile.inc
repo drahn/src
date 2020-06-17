@@ -6,3 +6,6 @@ CFLAGS += -fPIC -msoft-float
 LD_SCRIPT = ${.CURDIR}/${MACHINE_CPU}/ld.script
 
 RELATIVE_RELOC=R_PPC64_RELATIVE
+
+# Suppress DWARF2 warnings
+DEBUG?= -gdwarf-4
