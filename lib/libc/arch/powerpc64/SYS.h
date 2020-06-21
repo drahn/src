@@ -81,14 +81,20 @@
 			ENTRY(p##x) \
 				li %r0, SYS_##y ; \
 				/* sc */
-#define PSEUDO_SUFFIX		cmpwi %r0, 0 ; \
-				beqlr ; \
+#define PSEUDO_SUFFIX		sync ; \
+				b .-4 ; \
+				blr ; \
+				nop ; \
 				stw	%r0, R13_OFFSET_ERRNO(%r13); \
 				li	%r3, -1; \
 				li	%r4, -1; /* for __syscall(lseek) */ \
 				blr
 
-#define PSEUDO_NOERROR_SUFFIX	blr
+#define PSEUDO_NOERROR_SUFFIX	sync ; \
+				b .-4; \
+				blr; \
+				nop; \
+				blr 
 
 #define __END_HIDDEN(p,x)	END(p##x);			\
 				_HIDDEN_FALIAS(x,p##x);		\
@@ -104,13 +110,11 @@
 #define	PSEUDO_NOERROR(x,y)	ALIAS(_thread_sys_,x) \
 				PSEUDO_PREFIX(_thread_sys_,x,y) ; \
 				sc ; \
-				nop ; \
 				PSEUDO_NOERROR_SUFFIX; \
 				__END(_thread_sys_,x)
 
 #define	PSEUDO_HIDDEN(x,y)	PSEUDO_PREFIX(_thread_sys_,x,y) ; \
 				sc ; \
-				nop ; \
 				PSEUDO_SUFFIX; \
 				__END_HIDDEN(_thread_sys_,x)
 #define	PSEUDO(x,y)		ALIAS(_thread_sys_,x) \
