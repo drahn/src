@@ -182,6 +182,13 @@ void cpu_boot_secondary_processors(void);
 
 #define curpcb		curcpu()->ci_curpcb
 
+static inline unsigned int
+cpu_rnd_messybits(void)
+{
+	// Should do bit reversal ^ with csr_read(time);
+	return csr_read(time);
+}
+
 /*
  * Scheduling glue
  */
