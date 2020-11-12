@@ -41,6 +41,13 @@ MACHINE_IS_LP64 =
 . endif
 .endfor
 
+SKIP_BINUTILS= "yes"
+
+.if ${TARGET_ARCH} == "riscv64"
+SKIP_BINUTILS= "yes"
+
+.endif
+
 #CROSSCPPFLAGS?=	-nostdinc -I${CROSSDIR}/usr/include
 #CROSSLDFLAGS?=	-nostdlib -L${CROSSDIR}/usr/lib -static
 CROSSCFLAGS?=	${CROSSCPPFLAGS} -O2 ${PIPE} ${DEBUG}
@@ -149,7 +156,6 @@ ${CROSSDIRS}:
 	@echo "host and target have different size longs"
 	@echo "cross compiler generates bad code; aborting"; exit 1
 .endif
-	@-mkdir -p ${CROSSDIR}
 	@echo ${TARGET_ARCH} > ${CROSSDIR}/TARGET_ARCH
 	@echo TARGET_ARCH is `cat ${CROSSDIR}/TARGET_ARCH`
 	@echo ${TARGET_CPU} > ${CROSSDIR}/TARGET_CPU
@@ -198,6 +204,7 @@ ${CROSSINCLUDES}:	${CROSSOBJ}
 	@touch ${CROSSINCLUDES}
 
 ${CROSSBINUTILS}:	${CROSSINCLUDES}
+.if ${SKIP_BINUTILS:L} == "no"
 	(cd ${.CURDIR}/${BINUTILS_DIR}; \
 	    env CROSSDIR=${CROSSDIR} \
 	    CC=${CC} CXX=${CXX} \
@@ -230,6 +237,7 @@ ${CROSSBINUTILS}:	${CROSSINCLUDES}
 		${CROSSDIR}/usr/bin/${TARGET_CANON}-$$cmd ;\
 	 fi ;\
 	done
+.endif
 	@touch ${CROSSBINUTILS}
 
 
