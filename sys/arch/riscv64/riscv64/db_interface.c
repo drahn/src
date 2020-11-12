@@ -32,6 +32,7 @@
  * Interface to new debugger.
  */
 #include <sys/param.h>
+#include <sys/systm.h>
 #include <sys/proc.h>
 #include <sys/reboot.h>
 #include <sys/exec.h>
