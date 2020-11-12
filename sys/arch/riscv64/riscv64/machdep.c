@@ -32,6 +32,7 @@
 #include <sys/termios.h>
 #include <sys/sensors.h>
 #include <sys/syscallargs.h>
+#include <sys/stdarg.h>
 
 #include <net/if.h>
 #include <uvm/uvm.h>
