@@ -100,6 +100,10 @@ include	"dev/hid/files.hid"
 # Machine-independent I2C drivers
 include "dev/i2c/files.i2c"
 
+# FDT now requires drm (which is part of pci)
+include "dev/mii/files.mii"
+include "dev/pci/files.pci"
+
 # FDT support
 include "dev/ofw/files.ofw"
 
