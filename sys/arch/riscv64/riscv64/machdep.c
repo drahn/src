@@ -17,6 +17,7 @@
 #include <sys/param.h>
 #include <sys/timetc.h>
 #include <sys/sched.h>
+#include <sys/systm.h>
 #include <sys/proc.h>
 #include <sys/sysctl.h>
 #include <sys/reboot.h>
