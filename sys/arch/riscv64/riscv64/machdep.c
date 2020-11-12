@@ -76,7 +76,7 @@ struct vm_map *phys_map = NULL;
 
 int physmem;
 
-struct consdev *cn_tab;
+//struct consdev *cn_tab;
 
 caddr_t msgbufaddr;
 paddr_t msgbufphys;
