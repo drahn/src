@@ -54,11 +54,20 @@
 	ecall
 
 #define	CERROR		_C_LABEL(__cerror)
+#if defined(__pic__) || 1
+#define HANDLE_ERROR()							\
+	bnez	t0, 1f;							\
+	ret;								\
+1:	auipc	t0, %got_pcrel_hi(CERROR);				\
+	ld	t1, %pcrel_lo(1b)(t0);					\
+	jr	t1
+#else
 #define HANDLE_ERROR()							\
 	bnez	t0, 1f;							\
 	ret;								\
 1:	la	t1, CERROR;						\
 	jr	t1
+#endif
 
 #define _SYSCALL_NOERROR(x,y)						\
 	SYSENTRY(x);							\
