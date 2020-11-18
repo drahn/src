@@ -88,7 +88,7 @@
 #endif
 
 #define	_ENTRY(x)							\
-	.text; .globl x; .type x,@function; .align 4; x:
+	.text; .globl x; .type x,@function; .p2align 1; x:
 #define	ENTRY(y)	_ENTRY(_C_LABEL(y)); _PROF_PROLOGUE
 #define	ENTRY_NP(y)	_ENTRY(_C_LABEL(y))
 #define	ASENTRY(y)	_ENTRY(_ASM_LABEL(y)); _PROF_PROLOGUE
