@@ -32,11 +32,7 @@
 
 _ENTRY(CERROR)
 	RETGUARD_SETUP(CERROR, t6)
-#if 0
-	mrs	x1, tpidr_el0
-	str	w0, [x1, #TCB_OFFSET_ERRNO]
-	movn	x0, #0
-#endif
+	sw	a0, TCB_OFFSET_ERRNO(tp)
 	RETGUARD_CHECK(CERROR, t6)
 	ret
 END(CERROR)
