@@ -85,10 +85,10 @@
 	"	addi	sp, sp, 8+8+(16*8)				\n" \
 	"	addi	a1, sp, 4					\n" \
 	"								\n" \
-	"	lui	a2, %hi(_DYNAMIC)				\n" \
-	"	addi	a2, a2, %lo(_DYNAMIC)				\n" \
+	"#	lui	a2, %hi(_DYNAMIC)				\n" \
+	"#	addi	a2, a2, %lo(_DYNAMIC)				\n" \
 	"								\n" \
-	"	call	_dl_boot_bind					\n" \
+	"#	call	_dl_boot_bind					\n" \
 	"								\n" \
 	"	mv	sp, fp						\n" \
 	"	li	fp, 0x0						\n" \
