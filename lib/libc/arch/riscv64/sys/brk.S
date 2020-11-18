@@ -50,6 +50,7 @@ __curbrk:
 /*
  * Change the data segment size
  */
+	.weak	brk
 ENTRY(brk)
 	RETGUARD_SETUP(brk, t6)
 	lla	t1, _C_LABEL(__minbrk)
@@ -64,4 +65,3 @@ ENTRY(brk)
 	RETGUARD_CHECK(brk, t6)
 	ret
 END(brk)
-	.weak	brk
