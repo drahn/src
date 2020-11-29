@@ -3703,6 +3703,7 @@ public:
   void      setSP(uint64_t value) { _registers[2] = value; }
   uint64_t  getIP() const         { return _registers[1]; }
   void      setIP(uint64_t value) { _registers[1] = value; }
+  uint64_t  getWCookie() const     { return 0; }
 
 private:
 
