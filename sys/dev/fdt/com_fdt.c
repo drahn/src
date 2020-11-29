@@ -52,13 +52,15 @@ void
 com_fdt_init_cons(void)
 {
 	struct fdt_reg reg;
+	int d_width, d_shift;
 	void *node;
 
 	if ((node = fdt_find_cons("brcm,bcm2835-aux-uart")) == NULL &&
 	    (node = fdt_find_cons("snps,dw-apb-uart")) == NULL &&
 	    (node = fdt_find_cons("marvell,armada-38x-uart")) == NULL &&
 	    (node = fdt_find_cons("ti,omap3-uart")) == NULL &&
-	    (node = fdt_find_cons("ti,omap4-uart")) == NULL)
+	    (node = fdt_find_cons("ti,omap4-uart")) == NULL &&
+	    (node = fdt_find_cons("ns16550a")) == NULL)
 			return;
 	if (fdt_get_reg(node, 0, &reg))
 		return;
@@ -71,8 +73,19 @@ com_fdt_init_cons(void)
 	 * comcnattach() does by doing the minimal setup here.
 	 */
 
-	comcons_reg_width = OF_getpropint(stdout_node, "reg-io-width", 4);
-	comcons_reg_shift = OF_getpropint(stdout_node, "reg-shift", 2);
+	/*
+	 * default width for most ARM devices is 4 bytes, shift 2
+	 * however on riscv (ns16550a) the width is 1 bytes, shift 0 
+	 */
+	d_width = 4;
+	d_shift = 2;
+	if (fdt_find_cons("ns16550a") != NULL) {
+		d_width = 1;
+		d_shift = 0;
+	}
+
+	comcons_reg_width = OF_getpropint(stdout_node, "reg-io-width", d_width);
+	comcons_reg_shift = OF_getpropint(stdout_node, "reg-shift", d_shift);
 
 	comconsiot = fdt_cons_bs_tag;
 	if (bus_space_map(comconsiot, reg.addr, reg.size, 0, &comconsioh))
@@ -90,7 +103,8 @@ com_fdt_match(struct device *parent, void *match, void *aux)
 	    OF_is_compatible(faa->fa_node, "snps,dw-apb-uart") ||
 	    OF_is_compatible(faa->fa_node, "marvell,armada-38x-uart") ||
 	    OF_is_compatible(faa->fa_node, "ti,omap3-uart") ||
-	    OF_is_compatible(faa->fa_node, "ti,omap4-uart"));
+	    OF_is_compatible(faa->fa_node, "ti,omap4-uart") ||
+	    OF_is_compatible(faa->fa_node, "ns16550a"));
 }
 
 void
@@ -121,8 +135,17 @@ com_fdt_attach(struct device *parent, struct device *self, void *aux)
 	sc->sc_uarttype = COM_UART_16550;
 	sc->sc_frequency = freq ? freq : COM_FREQ;
 
-	sc->sc_reg_width = OF_getpropint(faa->fa_node, "reg-io-width", 4);
-	sc->sc_reg_shift = OF_getpropint(faa->fa_node, "reg-shift", 2);
+	/*
+	 * default width for most ARM devices is 4 bytes, shift 2
+	 * however on riscv (ns16550a) the width is 1 bytes, shift 0 
+	 */
+	if (OF_is_compatible(faa->fa_node, "ns16550a")) {
+		sc->sc_reg_width = OF_getpropint(faa->fa_node, "reg-io-width", 1);
+		sc->sc_reg_shift = OF_getpropint(faa->fa_node, "reg-shift", 0);
+	} else {
+		sc->sc_reg_width = OF_getpropint(faa->fa_node, "reg-io-width", 4);
+		sc->sc_reg_shift = OF_getpropint(faa->fa_node, "reg-shift", 2);
+	}
 
 	if (OF_is_compatible(faa->fa_node, "snps,dw-apb-uart") ||
 	    OF_is_compatible(faa->fa_node, "marvell,armada-38x-uart"))
