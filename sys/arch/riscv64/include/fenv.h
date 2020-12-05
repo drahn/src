@@ -1,4 +1,4 @@
-/*	$OpenBSD: fenv.h,v 1.3 2019/03/12 22:14:50 patrick Exp $	*/
+/*	$OpenBSD$	*/
 
 /*
  * Copyright (c) 2011 Martynas Venckus <martynas@openbsd.org>
@@ -37,7 +37,7 @@
  * exception constants defined above.
  */
 #define	FE_ALL_EXCEPT		(FE_INVALID | FE_DIVBYZERO | FE_OVERFLOW | \
-				 FE_UNDERFLOW | FE_INEXACT | FE_DENORMAL)
+				 FE_UNDERFLOW | FE_INEXACT )
 
 /*
  * Each symbol representing the rounding direction, expands to an integer
@@ -57,7 +57,7 @@
  */
 #define	_ROUND_MASK		(FE_TONEAREST | FE_UPWARD | FE_DOWNWARD | \
 				 FE_TOWARDZERO)
-#define	_ROUND_SHIFT		22
+#define	_ROUND_SHIFT		0
 
 /*
  * fenv_t represents the entire floating-point environment.

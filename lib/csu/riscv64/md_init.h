@@ -18,7 +18,8 @@
 
 #define MD_SECT_CALL_FUNC(section, func) 				\
 	__asm (".section "#section", \"ax\"				\n" \
-	"	call " #func "						\n" \
+	"1:	auipc t0, %got_pcrel_hi(" #func ")			\n" \
+	"	jalr  %pcrel_lo(1b)(t0)					\n" \
 	"	.previous")
 
 #define MD_SECTION_PROLOGUE(sect, entry_pt)				\
@@ -52,7 +53,6 @@
 	"	.globl	__start						\n" \
 	"_start:							\n" \
 	"__start:							\n" \
-	"	lla	gp, __global_pointer				\n" \
 	"	mv	a3, a2	# cleanup 				\n" \
 	"/* Get argc/argv/envp from stack */				\n" \
 	"	ld	a0, (sp)					\n" \

@@ -282,6 +282,27 @@ SRCS+=	comparetf2.c \
 SRCS+=	atomic_lock_free.c
 .endif
 
+.if ${RTARCH} == "riscv64"
+SRCS+=	comparetf2.c \
+	extenddftf2.c \
+	extendsftf2.c \
+	fixtfdi.c \
+	fixtfsi.c \
+	fixtfti.c \
+	fixunstfdi.c \
+	fixunstfsi.c \
+	fixunstfti.c \
+	floatditf.c \
+	floatsitf.c \
+	floattitf.c \
+	floatunditf.c \
+	floatunsitf.c \
+	floatuntitf.c \
+	multc3.c \
+	trunctfdf2.c \
+	trunctfsf2.c
+.endif
+
 .if ${RTARCH} == "sparc64"
 SRCS+=	comparetf2.c \
 	extenddftf2.c \

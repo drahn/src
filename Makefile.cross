@@ -41,12 +41,11 @@ MACHINE_IS_LP64 =
 . endif
 .endfor
 
-SKIP_BINUTILS= "no"
+SKIP_BINUTILS="no"
 
 .if ${TARGET_ARCH} == "riscv64"
 SKIP_BINUTILS= "yes"
 SKIPDIRS+=libcxx libcxxabi libm
-
 .endif
 
 #CROSSCPPFLAGS?=	-nostdinc -I${CROSSDIR}/usr/include
@@ -205,7 +204,8 @@ ${CROSSINCLUDES}:	${CROSSOBJ}
 	@touch ${CROSSINCLUDES}
 
 ${CROSSBINUTILS}:	${CROSSINCLUDES}
-.if ${SKIP_BINUTILS:L} == "no"
+	echo "SKIP BINUTILS" " ${SKIP_BINUTILS}
+.if ${SKIP_BINUTILS:L} != "yes"
 	(cd ${.CURDIR}/${BINUTILS_DIR}; \
 	    env CROSSDIR=${CROSSDIR} \
 	    CC=${CC} CXX=${CXX} \
