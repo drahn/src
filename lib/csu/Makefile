@@ -32,6 +32,10 @@ RCFLAGS=-DRCRT0
 RCFLAGS+=-fno-stack-protector 
 .endif
 
+.if ${MACHINE_ARCH} == "riscv64"
+CFLAGS+=-fno-stack-protector -fPIC
+.endif
+
 # Prevent use of builtins in _dl_boot_bind().
 .if ${MACHINE_CPU} == "mips64" || ${MACHINE_CPU} == "powerpc"
 RCFLAGS+=-fno-builtin

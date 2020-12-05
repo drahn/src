@@ -196,6 +196,6 @@ bsd.umg: bsd
 
 bsd.rd: bsd
 	cp -p bsd bsd.rd
-	rdconfig bsd.rd $S/../distrib/${_mach}/ramdisk/mr.fs
+	rdsetroot bsd.rd $S/../distrib/${_mach}/ramdisk/mr.fs
 
 %RULES
