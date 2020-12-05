@@ -73,6 +73,9 @@ diskconf(void)
 	if (*boot_file != '\0')
 		printf("bootfile: %s\n", boot_file);
 
+#if RAMDISK_HOOKS
+	bootdv = parsedisk("rd", 2, 0, &tmpdev);
+#endif /* RAMDISK_HOOKS */
 	if (bootdv == NULL) {
 
 		// boot_file is of the format <device>:/bsd we want the device part
@@ -115,6 +118,7 @@ diskconf(void)
 void
 device_register(struct device *dev, void *aux)
 {
+	printf("register_device(%s)\n", dev->dv_xname);
 }
 
 struct nam2blk nam2blk[] = {
@@ -122,6 +126,6 @@ struct nam2blk nam2blk[] = {
 	{ "sd",		 4 },
 	{ "cd",		 6 },
 	{ "vnd",	14 },
-	{ "rd",		17 },
+	{ "rd",		 8 },
 	{ NULL,		-1 }
 };

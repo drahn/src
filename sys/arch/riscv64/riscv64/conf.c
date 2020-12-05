@@ -58,7 +58,7 @@ struct bdevsw	bdevsw[] =
 	bdev_notdef(),			/* 5: was: SCSI tape */
 	bdev_disk_init(NCD,cd),		/* 6: SCSI CD-ROM */
 	bdev_notdef(),			/* 7 */
-	bdev_notdef(),			/* 8 */
+	bdev_disk_init(NRD,rd),		/* 8: ram disk driver */
 	bdev_notdef(),			/* 9 */
 	bdev_notdef(),			/* 10 */
 	bdev_notdef(),			/* 11 */
@@ -67,7 +67,7 @@ struct bdevsw	bdevsw[] =
 	bdev_disk_init(NVND,vnd),	/* 14: vnode disk driver */
 	bdev_notdef(),			/* 15: was: Sony CD-ROM */
 	bdev_notdef(),			/* 16: was: concatenated disk driver */
-	bdev_disk_init(NRD,rd),		/* 17: ram disk driver */
+	bdev_notdef(),			/* 17 */
 	bdev_notdef(),			/* 18 */
 };
 int	nblkdev = nitems(bdevsw);
@@ -367,7 +367,7 @@ int chrtoblktbl[] = {
 	/* 44 */	NODEV,
 	/* 45 */	NODEV,
 	/* 46 */	NODEV,
-	/* 47 */	17,		/* rd */
+	/* 47 */	8,		/* rd */
 };
 
 int nchrtoblktbl = nitems(chrtoblktbl);

@@ -141,6 +141,7 @@ STATIC?=	-static ${STATICPIE}
 # in environments where it's not possible to keep /sys publicly readable)
 #SYS_INCLUDE= 	symlinks
 
+
 # pic relocation flags.
 .if ${MACHINE_ARCH} == "alpha" || ${MACHINE_ARCH} == "powerpc" || \
     ${MACHINE_ARCH} == "sparc64"
@@ -156,6 +157,12 @@ DEFAULT_PIE_DEF=-DPIE_DEFAULT=2
 .else
 # small pie
 DEFAULT_PIE_DEF=-DPIE_DEFAULT=1
+.endif
+
+
+.if ${MACHINE_ARCH} == "riscv64"
+#nopic on RISCV so far
+NOPIC=
 .endif
 
 # don't try to generate PROFILED versions of libraries on machines
