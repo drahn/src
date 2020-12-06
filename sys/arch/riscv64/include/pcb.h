@@ -38,7 +38,5 @@ struct pcb {
 	caddr_t		pcb_onfault;	// On fault handler
 	struct fpreg	pcb_fpstate;	// Floating Point state */
 	struct cpu_info	*pcb_fpcpu;
-
-	void		*pcb_tcb;
 };
 #endif	/* _MACHINE_PCB_H_ */
