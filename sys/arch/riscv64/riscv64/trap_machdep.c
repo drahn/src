@@ -97,7 +97,7 @@ do_trap_supervisor(struct trapframe *frame)
 		break;
 	default:
 		dump_regs(frame);
-		panic("Unknown kernel exception %x trap value %lx\n",
+		panic("Unknown kernel exception %llx trap value %lx\n",
 		    exception, frame->tf_stval);
 	}
 }
@@ -128,8 +128,8 @@ do_trap_user(struct trapframe *frame)
 	}
 
 #if 0	// XXX Debug logging
-	CTR3(KTR_TRAP, "do_trap_user: curthread: %p, sepc: %lx, frame: %p",
-	    curthread, frame->tf_sepc, frame);
+	printf( "do_trap_user: curproc: %p, sepc: %lx, ra: %lx frame: %p\n",
+	    curcpu()->ci_curproc, frame->tf_sepc, frame->tf_ra, frame);
 #endif
 
 	switch(exception) {
@@ -174,7 +174,7 @@ do_trap_user(struct trapframe *frame)
 		break;
 	default:
 		dump_regs(frame);
-		panic("Unknown userland exception %x, trap value %lx\n",
+		panic("Unknown userland exception %llx, trap value %lx\n",
 		    exception, frame->tf_stval);
 	}
 }
@@ -264,6 +264,6 @@ done:
 
 fatal:
 	dump_regs(frame);
-	panic("Fatal page fault at %#lx: %#016lx", frame->tf_sepc, sv);
+	panic("Fatal page fault at %#llx: %#016lx", frame->tf_sepc, sv);
 }
 
