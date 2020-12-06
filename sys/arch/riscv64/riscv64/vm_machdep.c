@@ -85,7 +85,7 @@ cpu_fork(struct proc *p1, struct proc *p2, void *stack, void *tcb,
 	if (stack != NULL)
 		tf->tf_sp = STACKALIGN(stack);
 	if (tcb != NULL)
-		pcb->pcb_tcb = tcb;
+		tf->tf_tp = (register_t)tcb;
 
 	/* Arguments for child */
 	tf->tf_a[0] = 0;

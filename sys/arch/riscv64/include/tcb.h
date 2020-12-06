@@ -22,21 +22,12 @@
 
 #include <machine/pcb.h>
 
-static inline void
-__riscv64_set_tcb(void *tcb)
-{
-	// XXX While running in the kernel, we do not have a register
-	// which holds the current tcb -- do nothing?
-	// __asm volatile("mv tp, %0" : : "r" (tcb));
-}
-
 #define TCB_GET(p)		\
-	((struct pcb *)(p)->p_addr)->pcb_tcb
+	((struct pcb *)(p)->p_addr)->pcb_tf->tf_tp
 
-#define TCB_SET(p, addr)	\
-	do {							\
-		((struct pcb *)(p)->p_addr)->pcb_tcb = (addr);	\
-		__riscv64_set_tcb(addr);			\
+#define TCB_SET(p, addr)						\
+	do {								\
+		((struct pcb *)(p)->p_addr)->pcb_tf->tf_tp = (long)(addr); \
 	} while (0)
 
 #else /* _KERNEL */

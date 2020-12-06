@@ -83,7 +83,6 @@ member	pcb_sp
 member	pcb_onfault
 member	pcb_fpstate
 member	pcb_fpcpu
-member	pcb_tcb
 
 struct	cpu_info
 member	ci_dev
