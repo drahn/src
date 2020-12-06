@@ -21,7 +21,7 @@ PRPI=		/usr/local/share/raspberrypi-firmware/boot
 LISTS=		${.CURDIR}/list
 UTILS=		${.CURDIR}/../../miniroot
 
-MRFSDISKTYPE=	rdroot
+MRFSDISKTYPE=	rdrootc
 MRMAKEFSARGS=	-o disklabel=${MRFSDISKTYPE},minfree=0,density=8192
 
 DIRS=\
