@@ -118,7 +118,6 @@ diskconf(void)
 void
 device_register(struct device *dev, void *aux)
 {
-	printf("register_device(%s)\n", dev->dv_xname);
 }
 
 struct nam2blk nam2blk[] = {
