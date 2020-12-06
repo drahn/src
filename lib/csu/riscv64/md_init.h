@@ -19,7 +19,8 @@
 #define MD_SECT_CALL_FUNC(section, func) 				\
 	__asm (".section "#section", \"ax\"				\n" \
 	"1:	auipc t0, %got_pcrel_hi(" #func ")			\n" \
-	"	jalr  %pcrel_lo(1b)(t0)					\n" \
+	"	ld  t1, %pcrel_lo(1b)(t0)				\n" \
+	"	jalr  t1 						\n" \
 	"	.previous")
 
 #define MD_SECTION_PROLOGUE(sect, entry_pt)				\
