@@ -193,6 +193,7 @@ riscv_timer_attach(struct device *parent, struct device *self, void *aux)
 	printf(": tick rate %d KHz\n", sc->sc_ticks_per_second/1000);
 
 	riscv_timer_sc = sc;
+	stathz = 0;
 
 	riscv_clock_register(riscv_timer_cpu_initclocks, riscv_timer_delay,
 	    riscv_timer_setstatclockrate, riscv_timer_startclock);
@@ -215,10 +216,13 @@ riscv_timer_intr(void *frame)
 #endif
 	sc = riscv_timer_sc;
 
+
 	next = get_cycles() + sc->sc_ticks_per_second / new_hz;
 	sbi_set_timer(next);
-
 	csr_clear(sip, SIP_STIP);
+
+	hardclock(frame);
+
 
 	return (1); // Handled
 }
