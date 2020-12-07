@@ -131,7 +131,7 @@ child_return(arg)
 	frame->tf_a[0] = 0;
 	frame->tf_a[1] = 1;
 	// XXX How to signal error?
-	// frame->tf_spsr &= ~PSR_C;	/* carry bit */
+	frame->tf_t[0] = 0;
 
 	KERNEL_UNLOCK();
 
