@@ -127,6 +127,8 @@ do_trap_user(struct trapframe *frame)
 		return;
 	}
 
+	enable_interrupts();	//XXX allow preemption?
+
 #if 0	// XXX Debug logging
 	printf( "do_trap_user: curproc: %p, sepc: %lx, ra: %lx frame: %p\n",
 	    curcpu()->ci_curproc, frame->tf_sepc, frame->tf_ra, frame);
@@ -177,6 +179,7 @@ do_trap_user(struct trapframe *frame)
 		panic("Unknown userland exception %llx, trap value %lx\n",
 		    exception, frame->tf_stval);
 	}
+	disable_interrupts(); /* XXX -  ???  */
 }
 
 static void
