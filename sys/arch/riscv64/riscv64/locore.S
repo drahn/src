@@ -284,6 +284,8 @@ sigfillsiz:
 
 	.text
 ENTRY(sigcode)
+	jalr	ra
+
 	mv      a0, sp
 	addi    a0, a0, SF_SC //actual saved context
 
