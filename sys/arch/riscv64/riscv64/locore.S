@@ -284,29 +284,29 @@ sigfillsiz:
 
 	.text
 ENTRY(sigcode)
-       mv      a0, sp
-       addi    a0, a0, SF_SC //actual saved context
+	mv      a0, sp
+	addi    a0, a0, SF_SC //actual saved context
 
 1:
-       li      t0, SYS_sigreturn
-       ecall                //make a syscall from lower privilege to higher
+	li      t0, SYS_sigreturn
+	ecall                //make a syscall from lower privilege to higher
 	
-       .globl _C_LABEL(sigcoderet)
+	.globl _C_LABEL(sigcoderet)
 _C_LABEL(sigcoderet):
-       nop
-       nop
+	nop
+	nop
 
-       /* sigreturn failed, exit */
-       li      t0, SYS_exit
-       ecall
-       nop
-       nop
+	/* sigreturn failed, exit */
+	li      t0, SYS_exit
+	ecall
+	nop
+	nop
 
-       j       1b
+	j       1b
 END(sigcode)
-       /* This may be copied to the stack, keep it 16-byte aligned */
-       .align  3
-       .globl _C_LABEL(esigcode)
+	/* This may be copied to the stack, keep it 16-byte aligned */
+	.align  3
+	.globl _C_LABEL(esigcode)
 _C_LABEL(esigcode):
 
 
