@@ -42,7 +42,19 @@ typedef	long sig_atomic_t;
 #if __BSD_VISIBLE
 
 struct sigcontext {
-	int _dummy;
+	int		__sc_unused;
+	int		sc_mask;
+
+	register_t	sc_ra;
+	register_t	sc_sp;
+	register_t	sc_gp;
+	register_t	sc_tp;
+	register_t	sc_t[7];
+	register_t	sc_s[12];
+	register_t	sc_a[8];
+	register_t	sc_sepc;
+
+	long	sc_cookie;
 };
 
 #endif

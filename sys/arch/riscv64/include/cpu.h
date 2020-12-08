@@ -56,12 +56,12 @@
 /*
  * CLKF_PC: Extract the program counter from a clockframe
  */
-#define CLKF_PC(frame)		(frame->tf_ra)
+#define CLKF_PC(frame)		(frame->tf_sepc)
 
 /*
  * PROC_PC: Find out the program counter for the given process.
  */
-#define PROC_PC(p)	((p)->p_addr->u_pcb.pcb_tf->tf_ra)
+#define PROC_PC(p)	((p)->p_addr->u_pcb.pcb_tf->tf_sepc)
 #define PROC_STACK(p)	((p)->p_addr->u_pcb.pcb_tf->tf_sp)
 
 #include <sys/device.h>

@@ -99,7 +99,7 @@ sendsig(sig_t catcher, int sig, sigset_t mask, const siginfo_t *ksip)
 	struct sigframe *fp, frame;
 	struct sigacts *psp = p->p_p->ps_sigacts;
 	siginfo_t *sip = NULL;
-//	int i;
+	int i;
 
 	tf = process_frame(p);
 
@@ -122,20 +122,23 @@ sendsig(sig_t catcher, int sig, sigset_t mask, const siginfo_t *ksip)
 	frame.sf_signum = sig;
 
 	/* Save register context. */
-#if 0 
-//XXX riscv sfsc has no following fields
-//XXX TODO: add these fields to struct sigcontext ??
-	for (i=0; i < 30; i++)
-		frame.sf_sc.sc_x[i] = tf->tf_x[i];
+	for (i=0; i < 7; i++)
+		frame.sf_sc.sc_t[i] = tf->tf_t[i];
+	for (i=0; i < 12; i++)
+		frame.sf_sc.sc_s[i] = tf->tf_s[i];
+	for (i=0; i < 8; i++)
+		frame.sf_sc.sc_a[i] = tf->tf_a[i];
+	frame.sf_sc.sc_ra = tf->tf_ra;
 	frame.sf_sc.sc_sp = tf->tf_sp;
-	frame.sf_sc.sc_lr = tf->tf_lr;
-	frame.sf_sc.sc_elr = tf->tf_elr;
-	frame.sf_sc.sc_spsr = tf->tf_spsr;
+	frame.sf_sc.sc_tp = tf->tf_tp;
+	frame.sf_sc.sc_sepc = tf->tf_sepc;
+	frame.sf_sc.sc_mask = mask;
 
 	/* Save signal mask. */
 	frame.sf_sc.sc_mask = mask;
 
 	/* XXX Save floating point context */
+	/* XXX! */
 
 	if (psp->ps_siginfo & sigmask(sig)) {
 		sip = &fp->sf_si;
@@ -151,20 +154,19 @@ sendsig(sig_t catcher, int sig, sigset_t mask, const siginfo_t *ksip)
 		sigexit(p, SIGILL);
 		/* NOTREACHED */
 	}
-#endif
+
 
 	/*
 	 * Build context to run handler in.  We invoke the handler
 	 * directly, only returning via the trampoline.
          */
-	//XXX TODO: verify left-side register
 	tf->tf_a[0] = sig;
 	tf->tf_a[1] = (register_t)sip;
 	tf->tf_a[2] = (register_t)&fp->sf_sc;
 	tf->tf_ra = (register_t)catcher;
 	tf->tf_sp = (register_t)fp;
 
-	tf->tf_gp = p->p_p->ps_sigcode;
+	tf->tf_sepc = p->p_p->ps_sigcode;
 }
 
 /*
@@ -182,7 +184,6 @@ int
 sys_sigreturn(struct proc *p, void *v, register_t *retval)
 {
 
-#if 0
 	struct sys_sigreturn_args /* {
 		syscallarg(struct sigcontext *) sigcntxp;
 	} */ *uap = v;
@@ -195,7 +196,6 @@ sys_sigreturn(struct proc *p, void *v, register_t *retval)
 		return (EPERM);
 	}
 
-//XXX ksc, *scp has _dummy only so far
 	if (copyin(scp, &ksc, sizeof(*scp)) != 0)
 		return (EFAULT);
 
@@ -213,23 +213,30 @@ sys_sigreturn(struct proc *p, void *v, register_t *retval)
 	 * Make sure the processor mode has not been tampered with and
 	 * interrupts have not been disabled.
 	 */
+#if 0
+	/* XXX include sanity check */
 	if ((ksc.sc_spsr & PSR_M_MASK) != PSR_M_EL0t ||
 	    (ksc.sc_spsr & (PSR_I | PSR_F)) != 0)
 		return (EINVAL);
+#endif
 
 	/* XXX Restore floating point context */
 
 	/* Restore register context. */
 	tf = process_frame(p);
-	for (i=0; i < 30; i++)
-		tf->tf_x[i] = ksc.sc_x[i];
+	for (i=0; i < 7; i++)
+		tf->tf_t[i] = ksc.sc_t[i];
+	for (i=0; i < 12; i++)
+		tf->tf_s[i] = ksc.sc_s[i];
+	for (i=0; i < 8; i++)
+		tf->tf_a[i] = ksc.sc_a[i];
+	tf->tf_ra = ksc.sc_ra;
 	tf->tf_sp = ksc.sc_sp;
-	tf->tf_lr = ksc.sc_lr;
-	tf->tf_elr = ksc.sc_elr;
-	tf->tf_spsr = ksc.sc_spsr;
+	tf->tf_tp = ksc.sc_tp;
+	tf->tf_sepc = ksc.sc_sepc;
 
 	/* Restore signal mask. */
 	p->p_sigmask = ksc.sc_mask & ~sigcantmask;
-#endif
+
 	return (EJUSTRETURN);
 }
