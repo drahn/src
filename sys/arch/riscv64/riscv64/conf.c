@@ -37,8 +37,6 @@
 
 #include <machine/conf.h>
 
-//#include "wd.h"
-//bdev_decl(wd);
 #include "sd.h"
 #include "cd.h"
 #include "uk.h"
@@ -49,8 +47,7 @@
 struct bdevsw	bdevsw[] =
 {
 	/* XXX no riscv machine will have this but we are using arm64 as a template */
-	bdev_notdef(),			/* 0: ST506/ESDI/IDE disk		\
-	bdev_disk_init(NWD,wd), */
+	bdev_notdef(),			/* */
 	bdev_swap_init(1,sw),		/* 1: swap pseudo-device */
 	bdev_notdef(),			/* 2: was floppy diskette */
 	bdev_notdef(),			/* 3 */
@@ -103,7 +100,6 @@ int	nblkdev = nitems(bdevsw);
 #define	mmread	mmrw
 #define	mmwrite	mmrw
 cdev_decl(mm);
-cdev_decl(wd);
 #include "bio.h"
 #include "pty.h"
 #include "com.h"
@@ -155,8 +151,7 @@ struct cdevsw	cdevsw[] =
 	cdev_cn_init(1,cn),		/* 0: virtual console */
 	cdev_ctty_init(1,ctty),		/* 1: controlling terminal */
 	cdev_mm_init(1,mm),		/* 2: /dev/{null,mem,kmem,...} */
-	cdev_notdef(),			/* 3: ST506/ESDI/IDE disk		\
-	cdev_disk_init(NWD,wd), */
+	cdev_notdef(),			/* 3: */
 	cdev_notdef(),			/* 4 was /dev/drum */
 	cdev_tty_init(NPTY,pts),	/* 5: pseudo-tty slave */
 	cdev_ptc_init(NPTY,ptc),	/* 6: pseudo-tty master */
@@ -323,7 +318,7 @@ int chrtoblktbl[] = {
 	/*  0 */	NODEV,
 	/*  1 */	NODEV,
 	/*  2 */	NODEV,
-	/*  3 */	0,		/* wd */
+	/*  3 */	NODEV,
 	/*  4 */	NODEV,
 	/*  5 */	NODEV,
 	/*  6 */	NODEV,
