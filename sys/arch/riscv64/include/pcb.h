@@ -31,6 +31,7 @@ struct pcb {
 	u_int		pcb_flags;
 #define	PCB_FPU		0x00000001	/* Process had FPU initialized */
 #define	PCB_SINGLESTEP	0x00000002	/* Single step process */
+#define	PCB_FP_STARTED	0x00000004	/* FPU inited */
 	struct		trapframe *pcb_tf;
 
 	register_t	pcb_sp;		// stack pointer of switchframe
