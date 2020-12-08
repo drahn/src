@@ -148,19 +148,21 @@ do_trap_user(struct trapframe *frame)
 		svc_handler(frame);
 		break;
 	case EXCP_ILLEGAL_INSTRUCTION:
+#define FPE
 #ifdef FPE // XXX
-		if ((pcb->pcb_fpflags & PCB_FP_STARTED) == 0) {
+		if ((pcb->pcb_flags & PCB_FP_STARTED) == 0) {
 			/*
 			 * May be a FPE trap. Enable FPE usage
 			 * for this thread and try again.
 			 */
-			fpe_state_clear();
+			//fpe_state_clear();
 			frame->tf_sstatus &= ~SSTATUS_FS_MASK;
 			frame->tf_sstatus |= SSTATUS_FS_CLEAN;
-			pcb->pcb_fpflags |= PCB_FP_STARTED;
+			pcb->pcb_flags |= PCB_FP_STARTED;
 			break;
 		}
 #endif
+	printf("ILL at %llx\n", frame->tf_sepc);
 		sv.sival_int = stval;
 		KERNEL_LOCK();
 		trapsignal(p, SIGILL, 0, ILL_ILLTRP, sv);
@@ -168,6 +170,7 @@ do_trap_user(struct trapframe *frame)
 		userret(p);
 		break;
 	case EXCP_BREAKPOINT:
+	printf("BREAKPOINT\n");
 		sv.sival_int = stval;
 		KERNEL_LOCK();
 		trapsignal(p, SIGTRAP, 0, TRAP_BRKPT, sv);
@@ -248,6 +251,7 @@ data_abort(struct trapframe *frame, int usermode)
 			}
 			sv.sival_int = stval;
 			KERNEL_LOCK();
+			printf("signalling %d at pc 0%llx ra 0x%llx %p\n", code, frame->tf_sepc, frame->tf_ra, stval);
 			trapsignal(p, sig, 0, code, sv);
 			KERNEL_UNLOCK();
 		} else {
