@@ -163,10 +163,10 @@ sendsig(sig_t catcher, int sig, sigset_t mask, const siginfo_t *ksip)
 	tf->tf_a[0] = sig;
 	tf->tf_a[1] = (register_t)sip;
 	tf->tf_a[2] = (register_t)&fp->sf_sc;
-	tf->tf_ra = (register_t)catcher;
+	tf->tf_ra = p->p_p->ps_sigcode;
 	tf->tf_sp = (register_t)fp;
 
-	tf->tf_sepc = p->p_p->ps_sigcode;
+	tf->tf_sepc = (register_t)catcher;
 }
 
 /*
