@@ -31,11 +31,12 @@ ENTRY(sigsetjmp)
 
 	RETGUARD_SETUP(setjmp, t6)
 	mv	a2, a0 				/* save jmpbuf in x2 */
-	mv	a0, x0 
+	li	a0, 0
 	beqz	a1, 1f
 	/* Store the signal mask */
 	mv	a2, a0				/* set */
-	add	a0, zero, 1				/* SIG_BLOCK */
+	li	a1, 0
+	li	a0, 1				/* SIG_BLOCK */
 	SYSTRAP(sigprocmask)
 1:
 	sw	a0, (_JB_SIGMASK * 8)(a2)	/* oset */
