@@ -55,11 +55,11 @@ intc0		at cpu0
 com*		at mainbus0 early 1
 
 virtio*		at mainbus0
-#vio*		at virtio?	# Network
+vio*		at virtio?	# Network
 vioblk*		at virtio?
+vioscsi*	at virtio?	# Disk (SCSI)
 #viomb*		at virtio?	# Memory Ballooning
 #viornd*	at virtio?	# Random Source
-#vioscsi*	at virtio?	# Disk (SCSI)
 
 # simplebus0
 simplebus*	at mainbus0 early 1
