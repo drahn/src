@@ -269,7 +269,7 @@ data_abort(struct trapframe *frame, int usermode)
 			}
 			sv.sival_int = stval;
 			KERNEL_LOCK();
-			printf("signalling %d at pc 0%lx ra 0x%lx %llx\n", code, frame->tf_sepc, frame->tf_ra, stval);
+			//printf("signalling %d at pc 0%lx ra 0x%lx %llx\n", code, frame->tf_sepc, frame->tf_ra, stval);
 			trapsignal(p, sig, 0, code, sv);
 			KERNEL_UNLOCK();
 		} else {
