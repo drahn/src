@@ -116,7 +116,7 @@ ENTRY(siglongjmp)
 	ld	s9, 98(a0)
 	ld	s10, 106(a0)
 	ld	s11, 112(a0)
-	sd	ra, 120(a0)
+	ld	ra, 120(a0)
 
 	/* Store the vfp registers */
 	fld	fs0, 128(a0)
