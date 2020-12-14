@@ -120,10 +120,19 @@ do_trap_user(struct trapframe *frame)
 	KASSERTMSG((csr_read(sstatus) & (SSTATUS_SPP | SSTATUS_SIE)) == 0,
 	    "Came from U mode with interrupts enabled");
 
+	/* Save fpu context before (possibly) calling interrupt handler.
+	 * Could end up context switching in interrupt handler.
+	 */
+	fpu_save(p, frame);
+
 	exception = (frame->tf_scause & EXCP_MASK);
 	if (frame->tf_scause & EXCP_INTR) {
 		/* Interrupt */
 		riscv_cpu_intr(frame);
+		frame->tf_sstatus &= ~SSTATUS_FS_MASK;
+		if (pcb->pcb_fpcpu == curcpu() && curcpu()->ci_fpuproc == p) {
+			frame->tf_sstatus |= SSTATUS_FS_CLEAN;
+		}
 		return;
 	}
 
@@ -148,21 +157,21 @@ do_trap_user(struct trapframe *frame)
 		svc_handler(frame);
 		break;
 	case EXCP_ILLEGAL_INSTRUCTION:
-#define FPE
-#ifdef FPE // XXX
-		if ((pcb->pcb_flags & PCB_FP_STARTED) == 0) {
-			/*
-			 * May be a FPE trap. Enable FPE usage
-			 * for this thread and try again.
+
+	if ((frame->tf_sstatus & SSTATUS_FS_MASK) ==
+	    SSTATUS_FS_OFF) {
+		if(fpu_valid_opcode(frame->tf_stval)) {
+
+			/* XXX do this here or should it be in the
+			 * trap handler in the restore path?
 			 */
-			//fpe_state_clear();
+			fpu_load(p);
+
 			frame->tf_sstatus &= ~SSTATUS_FS_MASK;
-			frame->tf_sstatus |= SSTATUS_FS_CLEAN;
-			pcb->pcb_flags |= PCB_FP_STARTED;
 			break;
 		}
-#endif
-	printf("ILL at %llx\n", frame->tf_sepc);
+	}
+	printf("ILL at %lx scause %lx stval %lx\n", frame->tf_sepc, frame->tf_scause, frame->tf_stval);
 		sv.sival_int = stval;
 		KERNEL_LOCK();
 		trapsignal(p, SIGILL, 0, ILL_ILLTRP, sv);
@@ -183,6 +192,15 @@ do_trap_user(struct trapframe *frame)
 		    exception, frame->tf_stval);
 	}
 	disable_interrupts(); /* XXX -  ???  */
+	/* now that we will not context switch again,
+	 * see if we should enable FPU
+	 */
+	frame->tf_sstatus &= ~SSTATUS_FS_MASK;
+	if (pcb->pcb_fpcpu == curcpu() && curcpu()->ci_fpuproc == p) {
+		frame->tf_sstatus |= SSTATUS_FS_CLEAN;
+		//printf ("FPU enabled userland %p %p\n",
+		//    pcb->pcb_fpcpu, curcpu()->ci_fpuproc);
+	}
 }
 
 static void
@@ -251,7 +269,7 @@ data_abort(struct trapframe *frame, int usermode)
 			}
 			sv.sival_int = stval;
 			KERNEL_LOCK();
-			printf("signalling %d at pc 0%llx ra 0x%llx %p\n", code, frame->tf_sepc, frame->tf_ra, stval);
+			printf("signalling %d at pc 0%lx ra 0x%lx %llx\n", code, frame->tf_sepc, frame->tf_ra, stval);
 			trapsignal(p, sig, 0, code, sv);
 			KERNEL_UNLOCK();
 		} else {
@@ -271,6 +289,6 @@ done:
 
 fatal:
 	dump_regs(frame);
-	panic("Fatal page fault at %#llx: %#016lx", frame->tf_sepc, sv);
+	panic("Fatal page fault at %#lx: %#08x", frame->tf_sepc, sv.sival_int);
 }
 

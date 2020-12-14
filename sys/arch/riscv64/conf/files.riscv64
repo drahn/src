@@ -35,6 +35,7 @@ file	arch/riscv64/riscv64/pagezero.S
 file	arch/riscv64/riscv64/trap_machdep.c
 file	arch/riscv64/riscv64/sbi.c
 file	arch/riscv64/riscv64/cpufunc_asm.S
+file	arch/riscv64/riscv64/fpu.c
 
 file	arch/riscv64/riscv64/db_disasm.c	ddb
 file	arch/riscv64/riscv64/db_interface.c	ddb

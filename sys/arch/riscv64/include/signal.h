@@ -39,24 +39,26 @@
 
 typedef	long sig_atomic_t;
 
-#if __BSD_VISIBLE
+#if __BSD_VISIBLE || __XPG_VISIBLE >= 420
+
+#include <sys/_types.h>
 
 struct sigcontext {
 	int		__sc_unused;
 	int		sc_mask;
 
-	register_t	sc_ra;
-	register_t	sc_sp;
-	register_t	sc_gp;
-	register_t	sc_tp;
-	register_t	sc_t[7];
-	register_t	sc_s[12];
-	register_t	sc_a[8];
-	register_t	sc_sepc;
+	__register_t	sc_ra;
+	__register_t	sc_sp;
+	__register_t	sc_gp;
+	__register_t	sc_tp;
+	__register_t	sc_t[7];
+	__register_t	sc_s[12];
+	__register_t	sc_a[8];
+	__register_t	sc_sepc;
 
 	long	sc_cookie;
 };
 
-#endif
+#endif /* __BSD_VISIBLE || __XPG_VISIBLE >= 420 */
 
 #endif /* !_MACHINE_SIGNAL_H_ */
