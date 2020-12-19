@@ -41,10 +41,10 @@ MACHINE_IS_LP64 =
 . endif
 .endfor
 
-SKIP_BINUTILS="no"
+SKIP_BINUTILS=no
 
 .if ${TARGET_ARCH} == "riscv64"
-SKIP_BINUTILS= "yes"
+SKIP_BINUTILS=yes
 SKIPDIRS+=libcxx libcxxabi libm
 .endif
 
