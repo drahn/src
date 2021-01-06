@@ -109,7 +109,7 @@ void dumpframe (char *msg, struct trapframe *tf, void *p)
  * signal mask, the stack, and the frame pointer, it returns to the
  * user specified pc.
  */
-void
+int
 sendsig(sig_t catcher, int sig, sigset_t mask, const siginfo_t *ksip)
 {
 	struct proc *p = curproc;
@@ -170,8 +170,8 @@ sendsig(sig_t catcher, int sig, sigset_t mask, const siginfo_t *ksip)
 		 * Process has trashed its stack; give it an illegal
 		 * instruction to halt it in its tracks.
 		 */
-		sigexit(p, SIGILL);
 		/* NOTREACHED */
+		return 1;
 	}
 
 
@@ -186,6 +186,8 @@ sendsig(sig_t catcher, int sig, sigset_t mask, const siginfo_t *ksip)
 	tf->tf_sp = (register_t)fp;
 
 	tf->tf_sepc = (register_t)catcher;
+
+	return 0;
 }
 
 /*
