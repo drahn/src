@@ -18,9 +18,7 @@
 
 #define MD_SECT_CALL_FUNC(section, func) 				\
 	__asm (".section "#section", \"ax\"				\n" \
-	"1:	auipc t0, %got_pcrel_hi(" #func ")			\n" \
-	"	ld  t1, %pcrel_lo(1b)(t0)				\n" \
-	"	jalr  t1 						\n" \
+	"call " # func "@plt 						\n" \
 	"	.previous")
 
 #define MD_SECTION_PROLOGUE(sect, entry_pt)				\
@@ -33,6 +31,7 @@
 	"	addi	sp, sp, -16					\n" \
 	"	sd	ra,8(sp)					\n" \
 	"	sd	s0,0(sp)					\n" \
+	"	addi	s0, sp, 16					\n" \
 	"	/* fall thru */						\n" \
 	"	.previous")
 
@@ -41,6 +40,7 @@
 	__asm (								\
 	".section "#sect",\"ax\",%progbits				\n" \
 	"	ld	ra, 8(sp)					\n" \
+	"	ld	s0, 0(sp)					\n" \
 	"	addi	sp, sp, 16					\n" \
 	"	jr	ra						\n" \
 	"	.previous")
