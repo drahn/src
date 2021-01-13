@@ -46,7 +46,7 @@ SKIP_BINUTILS=no
 .if ${TARGET_ARCH} == "riscv64"
 PORTS_BINUTILS=riscv64-unknown-elf
 SKIP_BINUTILS=yes
-SKIPDIRS+=libcxx libcxxabi libm
+#SKIPDIRS+=libcxx libcxxabi libm
 .endif
 
 #CROSSCPPFLAGS?=	-nostdinc -I${CROSSDIR}/usr/include
