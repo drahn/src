@@ -702,12 +702,13 @@ start_init(void *arg)
 #endif
 #ifdef MACHINE_STACK_GROWS_UP
 			arg1 = ucp;
-			(void)copyout((caddr_t)flags, (caddr_t)ucp, i);
+			error = copyout((caddr_t)flags, (caddr_t)ucp, i);
 			ucp += i;
 #else
-			(void)copyout((caddr_t)flags, (caddr_t)(ucp -= i), i);
+			error = copyout((caddr_t)flags, (caddr_t)(ucp -= i), i);
 			arg1 = ucp;
 #endif
+		printf("copyout error %d\n", error);
 		}
 
 		/*

@@ -308,6 +308,8 @@ plic_attach(struct device *parent, struct device *dev, void *aux)
 	// sc->sc_intc.ic_cpu_enable = XXX Per-CPU Initialization?
 
 	riscv_intr_register_fdt(&sc->sc_intc);
+
+	printf("\n");
 }
 
 int
@@ -324,13 +326,19 @@ plic_irq_handler(void *frame)
 	pending = bus_space_read_4(sc->sc_iot, sc->sc_ioh,
 			PLIC_CLAIM(sc, cpu));
 
-	if(pending >= sc->sc_ndev)
+	if(pending >= sc->sc_ndev) {
+		printf("plic0: pending %x\n", pending);
 		return 0;
+	}
 
 	if (pending) {
 		handled = plic_irq_dispatch(pending, frame);
 		bus_space_write_4(sc->sc_iot, sc->sc_ioh,
 				PLIC_CLAIM(sc, cpu), pending);
+
+	if (handled == 0) {
+		printf("plic handled == 0 on pending %d\n", pending);
+	}
 	}
 
 	return handled;
@@ -345,6 +353,7 @@ plic_irq_dispatch(uint32_t irq,	void *frame)
 	struct plic_intrhand *ih;
 	void *arg;
 
+#define DEBUG_INTC
 #ifdef DEBUG_INTC
 	printf("plic irq %d fired\n", irq);
 #endif
