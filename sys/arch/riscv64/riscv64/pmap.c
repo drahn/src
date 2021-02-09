@@ -446,6 +446,9 @@ pmap_remove_pv(struct pte_desc *pted)
 	mtx_leave(&pg->mdpage.pv_mtx);
 }
 
+vaddr_t last_pmap_addr;
+vaddr_t last_pmap_addr_cnt;
+
 int
 pmap_enter(pmap_t pm, vaddr_t va, paddr_t pa, vm_prot_t prot, int flags)
 {
@@ -455,6 +458,16 @@ pmap_enter(pmap_t pm, vaddr_t va, paddr_t pa, vm_prot_t prot, int flags)
 	int cache = PMAP_CACHE_WB;
 	int need_sync = 0;
 
+	if (va == last_pmap_addr) {
+		last_pmap_addr_cnt++;
+	} else {
+		if (last_pmap_addr_cnt > 2) {
+			printf(" requested %p cnt %d\n",
+			    (void *)last_pmap_addr, last_pmap_addr_cnt); 
+		}
+		last_pmap_addr = va;
+		last_pmap_addr_cnt = 1;
+	}
 	if (pa & PMAP_NOCACHE)
 		cache = PMAP_CACHE_CI;
 	if (pa & PMAP_DEVICE)

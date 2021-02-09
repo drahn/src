@@ -33,7 +33,7 @@ RCFLAGS+=-fno-stack-protector
 .endif
 
 .if ${MACHINE_ARCH} == "riscv64"
-CFLAGS+=-fno-stack-protector -fPIC
+CFLAGS+=-fno-stack-protector
 .endif
 
 # Prevent use of builtins in _dl_boot_bind().

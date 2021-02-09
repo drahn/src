@@ -218,10 +218,12 @@ riscv_timer_intr(void *frame)
 
 
 	next = get_cycles() + sc->sc_ticks_per_second / new_hz;
+
+	hardclock(frame);
+
 	sbi_set_timer(next);
 	csr_clear(sip, SIP_STIP);
 
-	hardclock(frame);
 
 
 	return (1); // Handled
