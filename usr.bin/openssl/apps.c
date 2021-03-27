@@ -2341,9 +2341,11 @@ show_cipher(const OBJ_NAME *name, void *arg)
 	fprintf(stderr, " -%-24s%s", name->name, (++*n % 3 != 0 ? "" : "\n"));
 }
 
+#if 0
 int
 SSL_is_dtls(const SSL *s)
 {
 	return SSL_version(s) == DTLS1_VERSION ||
 	    SSL_version(s) == DTLS1_2_VERSION;
 }
+#endif
