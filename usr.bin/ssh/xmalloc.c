@@ -22,7 +22,7 @@
 #include "xmalloc.h"
 #include "log.h"
 
-char *malloc_options = "S";
+//char *malloc_options = "S";
 
 void *
 xmalloc(size_t size)
