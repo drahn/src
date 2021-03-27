@@ -208,10 +208,10 @@ ${CROSSBINUTILS}:	${CROSSINCLUDES}
 	echo "PORTS BINUTILS" " ${PORTS_BINUTILS}
 .if ${PORTS_BINUTILS:L} != ""
 	@for cmd in ${BINUTILS}; do \
-	    rm -f /usr/cross/riscv64/usr/riscv64-unknown-openbsd6.8/bin/$$cmd ; \
-	    ln -sf /usr/local/${PORTS_BINUTILS}/bin/$$cmd /usr/cross/riscv64/usr/riscv64-unknown-openbsd6.8/bin/$$cmd ; \
-	    ln -sf /usr/local/${PORTS_BINUTILS}/bin/$$cmd /usr/cross/riscv64/usr/riscv64-unknown-openbsd6.8/bin/${TARGET_CANON}-$$cmd ; \
-	    echo making "/usr/cross/riscv64/usr/riscv64-unknown-openbsd6.8/bin/$$cmd -> /usr/local/${PORTS_BINUTILS}/bin/$$cmd" ; \
+	    rm -f /usr/cross/riscv64/usr/riscv64-unknown-openbsd6.9/bin/$$cmd ; \
+	    ln -sf /usr/local/${PORTS_BINUTILS}/bin/$$cmd /usr/cross/riscv64/usr/riscv64-unknown-openbsd6.9/bin/$$cmd ; \
+	    ln -sf /usr/local/${PORTS_BINUTILS}/bin/$$cmd /usr/cross/riscv64/usr/riscv64-unknown-openbsd6.9/bin/${TARGET_CANON}-$$cmd ; \
+	    echo making "/usr/cross/riscv64/usr/riscv64-unknown-openbsd6.9/bin/$$cmd -> /usr/local/${PORTS_BINUTILS}/bin/$$cmd" ; \
 	done
 .else
 	(cd ${.CURDIR}/${BINUTILS_DIR}; \
