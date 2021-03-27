@@ -67,6 +67,15 @@ _start_kern_bootstrap:
 	 * a1 = dtbp
 	 */
 
+	bnez a1, 1f
+	// no dtb, we assume we were booted via efiboot
+	la t0, esym
+	add a3, a0, t1
+	sd a3, 0(t0)
+	li a0, 0
+	mv a1, a2
+
+1:
 	/* Pick a hart to run the boot process. */
 	lla	t0, hart_lottery
 	li	t1, 1
@@ -91,6 +100,8 @@ _start_kern_bootstrap:
 	/* Build PTE for 1 GiB identity-mapped gigapage */
 	lla	s1, pagetable_l1	//phy addr
 	mv	s2, s9			//phy addr
+	li      t0, 0xffffffffc0000000
+	and     s2, s2, t0
 	srli	s2, s2, PAGE_SHIFT	//12, 4K page
 	slli	t5, s2, PTE_PPN0_S	//10bit Phys Mem Attribute 
 	li	t4, (PTE_KERN | PTE_X)	//flag bit
@@ -176,6 +187,8 @@ _start_kern_bootstrap:
 	
 	//calc PTE based on pa
 	mv	s2, a1			//passed by bbl
+	li      t0, 0xffffffffffe00000
+	and     s2, s2, t0
 	srli	s2, s2, PAGE_SHIFT	//12
 	slli	t2, s2, PTE_PPN0_S	//10
 	li	t0, (PTE_KERN)
@@ -260,6 +273,9 @@ va:
 	sd	t0, KERN_STACK(sp)
 
 	li	t0, (VM_MAX_KERNEL_ADDRESS - 2 * L2_SIZE) // XXX Why 2?
+	li      t1, 0x1fffff
+	and     t1, a1, t1
+	add     t0, t0, t1
 	sd	t0, DTBP_VIRT(sp)
 	sd	a1, DTBP_PHYS(sp)
 
