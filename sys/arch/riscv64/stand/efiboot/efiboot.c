@@ -1,4 +1,4 @@
-/*	$OpenBSD: efiboot.c,v 1.29 2020/05/10 11:55:42 kettenis Exp $	*/
+/*	$OpenBSD: efiboot.c,v 1.32 2021/03/26 23:29:21 kn Exp $	*/
 
 /*
  * Copyright (c) 2015 YASUOKA Masahiko <yasuoka@yasuoka.net>
@@ -111,6 +111,8 @@ static SIMPLE_INPUT_INTERFACE *conin;
  */
 static dev_t serial = makedev(0, 0);
 static dev_t framebuffer = makedev(1, 0);
+
+static char framebuffer_path[128];
 
 void
 efi_cons_probe(struct consdev *cn)
@@ -356,18 +358,28 @@ efi_framebuffer(void)
 	     child = fdt_next_node(child)) {
 		if (!fdt_node_is_compatible(child, "simple-framebuffer"))
 			continue;
-		if (fdt_node_property(child, "status", &prop) &&
-		    strcmp(prop, "okay") == 0)
+		if (!fdt_node_property(child, "status", &prop) ||
+		    strcmp(prop, "okay") == 0) {
+			strlcpy(framebuffer_path, "/chosen/",
+			    sizeof(framebuffer_path));
+			strlcat(framebuffer_path, fdt_node_name(child),
+			    sizeof(framebuffer_path));
 			return;
+		}
 	}
 	node = fdt_find_node("/");
 	for (child = fdt_child_node(node); child;
 	     child = fdt_next_node(child)) {
 		if (!fdt_node_is_compatible(child, "simple-framebuffer"))
 			continue;
-		if (fdt_node_property(child, "status", &prop) &&
-		    strcmp(prop, "okay") == 0)
+		if (!fdt_node_property(child, "status", &prop) ||
+		    strcmp(prop, "okay") == 0) {
+			strlcpy(framebuffer_path, "/",
+			    sizeof(framebuffer_path));
+			strlcat(framebuffer_path, fdt_node_name(child),
+			    sizeof(framebuffer_path));
 			return;
+		}
 	}
 
 	status = EFI_CALL(BS->LocateProtocol, &gop_guid, NULL, (void **)&gop);
@@ -426,35 +438,26 @@ efi_framebuffer(void)
 	fdt_node_add_property(child, "reg", reg, (acells + scells) * 4);
 	fdt_node_add_property(child, "compatible",
 	    "simple-framebuffer", strlen("simple-framebuffer") + 1);
+
+	strlcpy(framebuffer_path, "/chosen/framebuffer",
+	    sizeof(framebuffer_path));
 }
 
 void
 efi_console(void)
 {
-	char path[128];
-	void *node, *child;
-	char *prop;
+	void *node;
 
 	if (cn_tab->cn_dev != framebuffer)
 		return;
 
-	/* Find the desired framebuffer node. */
-	node = fdt_find_node("/chosen");
-	for (child = fdt_child_node(node); child;
-	     child = fdt_next_node(child)) {
-		if (!fdt_node_is_compatible(child, "simple-framebuffer"))
-			continue;
-		if (fdt_node_property(child, "status", &prop) &&
-		    strcmp(prop, "okay") == 0)
-			break;
-	}
-	if (child == NULL)
+	if (strlen(framebuffer_path) == 0)
 		return;
 
 	/* Point stdout-path at the framebuffer node. */
-	strlcpy(path, "/chosen/", sizeof(path));
-	strlcat(path, fdt_node_name(child), sizeof(path));
-	fdt_node_add_property(node, "stdout-path", path, strlen(path) + 1);
+	node = fdt_find_node("/chosen");
+	fdt_node_add_property(node, "stdout-path",
+	    framebuffer_path, strlen(framebuffer_path) + 1);
 }
 
 uint64_t dma_constraint[2] = { 0, -1 };
@@ -502,8 +505,8 @@ efi_makebootargs(char *bootargs, int howto)
 		}
 	}
 
-	//	if (fdt == NULL || acpi)
-	//		fdt = efi_acpi();
+	if (fdt == NULL || acpi)
+		fdt = efi_acpi();
 
 	if (!fdt_init(fdt))
 		return NULL;
@@ -977,24 +980,26 @@ Xdtb_efi(void)
 
 #define O_RDONLY	0
 
-	if (cmd.argc != 2)
-		return (1);
+	if (cmd.argc != 2) {
+		printf("dtb file\n");
+		return (0);
+	}
 
 	snprintf(path, sizeof(path), "%s:%s", cmd.bootdev, cmd.argv[1]);
 
 	fd = open(path, O_RDONLY);
 	if (fd < 0 || fstat(fd, &sb) == -1) {
 		printf("cannot open %s\n", path);
-		return (1);
+		return (0);
 	}
 	if (efi_memprobe_find(EFI_SIZE_TO_PAGES(sb.st_size),
 	    0x1000, &addr) != EFI_SUCCESS) {
 		printf("cannot allocate memory for %s\n", path);
-		return (1);
+		return (0);
 	}
 	if (read(fd, (void *)addr, sb.st_size) != sb.st_size) {
 		printf("cannot read from %s\n", path);
-		return (1);
+		return (0);
 	}
 
 	fdt = (void *)addr;

@@ -303,7 +303,7 @@ srprobe(void)
 }
 
 int
-sr_strategy(struct sr_boot_volume *bv, int rw, daddr32_t blk, size_t size,
+sr_strategy(struct sr_boot_volume *bv, int rw, daddr_t blk, size_t size,
     void *buf, size_t *rsize)
 {
 	struct diskinfo *sr_dip, *dip;
@@ -637,7 +637,7 @@ sropen(struct open_file *f, ...)
 }
 
 int
-srstrategy(void *devdata, int rw, daddr32_t blk, size_t size, void *buf,
+srstrategy(void *devdata, int rw, daddr_t blk, size_t size, void *buf,
     size_t *rsize)
 {
 	struct diskinfo *dip = (struct diskinfo *)devdata;
