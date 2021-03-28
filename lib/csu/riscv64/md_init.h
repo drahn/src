@@ -16,10 +16,17 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#ifdef __PIC__
 #define MD_SECT_CALL_FUNC(section, func) 				\
 	__asm (".section "#section", \"ax\"				\n" \
 	"call " # func "@plt 						\n" \
-	"	.previous")
+"	.previous")
+#else
+#define MD_SECT_CALL_FUNC(section, func) 				\
+	__asm (".section "#section", \"ax\"				\n" \
+	"call " # func " 						\n" \
+"	.previous")
+#endif
 
 #define MD_SECTION_PROLOGUE(sect, entry_pt)				\
 	__asm (								\
