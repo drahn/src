@@ -697,6 +697,9 @@ StringRef riscv::getRISCVArch(const llvm::opt::ArgList &Args,
     else
       return "rv32imafdc";
   } else {
+    if (Triple.getOS() == llvm::Triple::OpenBSD)
+      return "rv64imafd";
+    else
     if (Triple.getOS() == llvm::Triple::UnknownOS)
       return "rv64imac";
     else
