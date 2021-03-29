@@ -17,6 +17,9 @@ AFLAGS+=       ${NOPIE_FLAGS}
 LDFLAGS+=      ${NOPIE_LDFLAGS}
 .endif
 
+.if ${MACHINE_ARCH} == "riscv64"
+CFLAGS+=       -mno-relax
+.endif
 .if ${WARNINGS:L} == "yes"
 CFLAGS+=       ${CDIAGFLAGS}
 CXXFLAGS+=     ${CXXDIAGFLAGS}
