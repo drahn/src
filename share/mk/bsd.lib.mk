@@ -28,6 +28,9 @@ SHLIB_MINOR=${minor}
 .SUFFIXES:
 .SUFFIXES: .out .o .po .so .do .S .s .c .cc .cpp .C .cxx .f .y .l .m4 .m
 
+.if ${MACHINE_ARCH} == "riscv64"
+CFLAGS+=       -mno-relax
+.endif
 .if defined(NOPIE)
 CFLAGS+=	${NOPIE_FLAGS}
 CXXFLAGS+=	${NOPIE_FLAGS}
