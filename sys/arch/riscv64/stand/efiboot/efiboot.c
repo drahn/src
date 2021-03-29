@@ -505,8 +505,8 @@ efi_makebootargs(char *bootargs, int howto)
 		}
 	}
 
-	if (fdt == NULL || acpi)
-		fdt = efi_acpi();
+	//if (fdt == NULL || acpi)
+	//	fdt = efi_acpi();
 
 	if (!fdt_init(fdt))
 		return NULL;
