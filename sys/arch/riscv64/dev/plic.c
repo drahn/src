@@ -353,7 +353,7 @@ plic_irq_dispatch(uint32_t irq,	void *frame)
 	struct plic_intrhand *ih;
 	void *arg;
 
-#define DEBUG_INTC
+//#define DEBUG_INTC
 #ifdef DEBUG_INTC
 	printf("plic irq %d fired\n", irq);
 #endif
@@ -379,9 +379,10 @@ plic_irq_dispatch(uint32_t irq,	void *frame)
 		else
 			arg = frame;
 
-		enable_interrupts();	//XXX allow preemption?
+// comment for now, ?!
+//		enable_interrupts();	//XXX allow preemption?
 		handled = ih->ih_func(arg);
-		disable_interrupts();
+//		disable_interrupts();
 		if (handled)
 			ih->ih_count.ec_count++;
 
