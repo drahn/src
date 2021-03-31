@@ -208,7 +208,7 @@ int
 riscv_timer_intr(void *frame)
 {
 	struct riscv_timer_softc *sc;
-	uint64_t next;
+	uint64_t next, now;
 	u_int new_hz = 100;
 
 #ifdef	DEBUG_TIMER
@@ -216,15 +216,14 @@ riscv_timer_intr(void *frame)
 #endif
 	sc = riscv_timer_sc;
 
-
-	next = get_cycles() + sc->sc_ticks_per_second / new_hz;
-
 	hardclock(frame);
 
+	// XXX should base timer interval from the expected
+	// time of expiration, not 'now'
+	now = get_cycles();
+	next = now + ((sc->sc_ticks_per_second / new_hz));
 	sbi_set_timer(next);
-	csr_clear(sip, SIP_STIP);
-
-
+	csr_set(sip, SIE_STIE);
 
 	return (1); // Handled
 }
