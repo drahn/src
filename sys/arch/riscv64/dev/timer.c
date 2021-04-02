@@ -204,16 +204,20 @@ riscv_timer_attach(struct device *parent, struct device *self, void *aux)
 	tc_init(&riscv_timer_timecount);
 }
 
+
+int timer_mindelta = 0;
 int
 riscv_timer_intr(void *frame)
 {
 	struct riscv_timer_softc *sc;
-	uint64_t next, now;
+	uint64_t next, now, newnow;
+	int timermissed = 0;
 	u_int new_hz = 100;
 
 #ifdef	DEBUG_TIMER
 	printf("RISC-V Timer Interrupt\n");
 #endif
+
 	sc = riscv_timer_sc;
 
 	hardclock(frame);
@@ -222,8 +226,26 @@ riscv_timer_intr(void *frame)
 	// time of expiration, not 'now'
 	now = get_cycles();
 	next = now + ((sc->sc_ticks_per_second / new_hz));
-	sbi_set_timer(next);
-	csr_set(sip, SIE_STIE);
+
+	do {
+		newnow = get_cycles();
+		if (next < (newnow + timer_mindelta)) {
+			/* slowly scale up miss timer. */
+			if (timermissed > 1)
+				timer_mindelta ++;
+			next = newnow + timer_mindelta;
+		}
+		sbi_set_timer(next);
+		csr_set(sip, SIE_STIE);
+
+		/* re-read current time to verif
+		 * time hasn't been set into the past
+		 */
+
+		newnow = get_cycles();
+		/* if we missed more than once, increment the min period */
+		timermissed++;
+	} while (next <= newnow);
 
 	return (1); // Handled
 }
