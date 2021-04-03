@@ -915,7 +915,12 @@ pmap_vp_destroy(pmap_t pm)
 	struct pte_desc *pted;
 	int j, k, l;
 
-	for (j = 0; j < VP_IDX1_CNT; j++) {
+	vp1 = pm->pm_vp.l1;
+	/*
+	 * there is not a separate supervisor and user page table root ?
+	 * remove only user page tables
+	 */
+	for (j = 0; j < L1_KERN_BASE; j++) {
 		vp2 = vp1->vp[j];
 		if (vp2 == NULL)
 			continue;
