@@ -14,30 +14,11 @@ FFSSTART!=	expr ${MSDOSSTART} + ${MSDOSSIZE}
 NEWFS_ARGS_msdos=-L boot -c1 -F16
 MOUNT_ARGS_msdos=-o-l
 
-PDTB=		/usr/local/share/dtb/arm64
-PUBOOT=		/usr/local/share/u-boot
-PRPI=		/usr/local/share/raspberrypi-firmware/boot
-
 LISTS=		${.CURDIR}/list
 UTILS=		${.CURDIR}/../../miniroot
 
 MRFSDISKTYPE=	rdrootc
 MRMAKEFSARGS=	-o disklabel=${MRFSDISKTYPE},minfree=0,density=8192
-
-DIRS=\
-	pine64 \
-	rpi
-
-PIFILES=\
-	bootcode.bin \
-	start.elf \
-	fixup.dat \
-	bcm2710-rpi-3-b.dtb \
-	bcm2710-rpi-3-b-plus.dtb \
-	bcm2710-rpi-cm3.dtb
-
-PIDTBO=\
-	disable-bt.dtbo
 
 all: ${FS}
 
@@ -49,20 +30,9 @@ ${FS}: bsd.rd
 	echo 'a a\n\n\n\nw\nq\n' | disklabel -E `cat vnd` >/dev/null
 	newfs -t msdos ${NEWFS_ARGS_msdos} /dev/r`cat vnd`i
 	mount ${MOUNT_ARGS_msdos} /dev/`cat vnd`i ${MOUNT_POINT}
-.for FILE in ${PIFILES}
-	cp ${PRPI}/${FILE} ${MOUNT_POINT}/
-.endfor
-	mkdir -p ${MOUNT_POINT}/overlays
-.for FILE in ${PIDTBO}
-	cp ${PRPI}/overlays/${FILE} ${MOUNT_POINT}/overlays/
-.endfor
-	cp ${PUBOOT}/rpi_3/u-boot.bin ${MOUNT_POINT}/
 	mkdir -p ${MOUNT_POINT}/efi/boot
-	cp /usr/mdec/BOOTAA64.EFI ${MOUNT_POINT}/efi/boot/bootaa64.efi
-	echo bootaa64.efi > ${MOUNT_POINT}/efi/boot/startup.nsh
-	echo 'arm_64bit=1\nenable_uart=1\ndtoverlay=disable-bt\nkernel=u-boot.bin' > ${MOUNT_POINT}/config.txt
-	dd if=${PUBOOT}/pine64_plus/u-boot-sunxi-with-spl.bin \
-	    of=/dev/r`cat vnd`c bs=1024 seek=8 conv=sync
+	cp ${DESTDIR}/usr/mdec/BOOTRISCV64.EFI ${MOUNT_POINT}/efi/boot/bootriscv64.efi
+	echo bootriscv64.efi > ${MOUNT_POINT}/efi/boot/startup.nsh
 	umount ${MOUNT_POINT}
 	newfs -O 1 -m 0 -o space -i 524288 -c ${FSSIZE} /dev/r`cat vnd`a
 	mount /dev/`cat vnd`a ${MOUNT_POINT}
