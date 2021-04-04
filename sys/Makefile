@@ -6,7 +6,7 @@ SUBDIR=	dev/microcode \
 	arch/hppa arch/i386 \
 	arch/landisk arch/loongson arch/luna88k \
 	arch/macppc arch/octeon arch/powerpc64 \
-	arch/sgi arch/sparc64
+	arch/riscv64 arch/sgi arch/sparc64
 
 tags:
 	cd ${.CURDIR}/kern; make tags
