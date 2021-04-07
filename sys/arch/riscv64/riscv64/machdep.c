@@ -214,7 +214,8 @@ cpu_idle_enter()
 void
 cpu_idle_cycle()
 {
-	// XXX Enable interrupts?
+	// Enable interrupts
+	enable_interrupts();
 	// XXX Data Sync Barrier? (Maybe SFENCE???)
 	__asm volatile("wfi");
 }
