@@ -205,7 +205,7 @@ riscv_timer_attach(struct device *parent, struct device *self, void *aux)
 }
 
 
-int timer_mindelta = 0;
+int timer_mindelta = 0; /* what should this be? */
 int
 riscv_timer_intr(void *frame)
 {
@@ -213,6 +213,7 @@ riscv_timer_intr(void *frame)
 	uint64_t next, now, newnow;
 	int timermissed = 0;
 	u_int new_hz = 100;
+	int s;
 
 #ifdef	DEBUG_TIMER
 	printf("RISC-V Timer Interrupt\n");
@@ -220,7 +221,10 @@ riscv_timer_intr(void *frame)
 
 	sc = riscv_timer_sc;
 
-	hardclock(frame);
+	s = splclock();
+
+	if (s < IPL_CLOCK)
+		hardclock(frame);
 
 	// XXX should base timer interval from the expected
 	// time of expiration, not 'now'
@@ -233,8 +237,8 @@ riscv_timer_intr(void *frame)
 			/* slowly scale up miss timer. */
 			if (timermissed > 1)
 				timer_mindelta ++;
-			next = newnow + timer_mindelta;
 		}
+		next = newnow + timer_mindelta;
 		sbi_set_timer(next);
 		csr_set(sip, SIE_STIE);
 
@@ -247,6 +251,7 @@ riscv_timer_intr(void *frame)
 		timermissed++;
 	} while (next <= newnow);
 
+	splx(s);
 	return (1); // Handled
 }
 
