@@ -6,3 +6,4 @@ SRCS+=	fpgetmask.c fpgetround.c fpgetsticky.c
 SRCS+=	fpsetmask.c fpsetround.c fpsetsticky.c
 SRCS+=	usertc.c
 SRCS+=	setjmp.S _setjmp.S sigsetjmp.S
+SRCS+=	isnanl.c signbitl.c isfinitel.c isinfl.c isnormall.c
