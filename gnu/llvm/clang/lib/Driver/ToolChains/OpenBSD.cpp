@@ -312,15 +312,3 @@ Tool *OpenBSD::buildAssembler() const {
 Tool *OpenBSD::buildLinker() const { return new tools::openbsd::Linker(*this); }
 
 bool OpenBSD::HasNativeLLVMSupport() const { return true; }
-
-bool OpenBSD::isPIEDefault() const {
-  // Only enable PIE on architectures that support PC-relative
-  // addressing. PC-relative addressing is required, as the process
-  // startup code must be able to relocate itself.
-  switch (getTriple().getArch()) {
-  case llvm::Triple::riscv64:
-    return false;
-  default:
-    return true;
-  }
-}

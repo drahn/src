@@ -58,7 +58,7 @@ public:
 
   bool IsMathErrnoDefault() const override { return false; }
   bool IsObjCNonFragileABIDefault() const override { return true; }
-  bool isPIEDefault() const override;
+  bool isPIEDefault() const override { return true; }
 
   RuntimeLibType GetDefaultRuntimeLibType() const override {
     return ToolChain::RLT_CompilerRT;
