@@ -65,11 +65,13 @@ INSTALL_STRIP=
 
 ELF_LDFLAGS+=--shared -Bsymbolic --no-undefined
 
-.ifdef	RELATIVE_RELOC
+.ifdef	RELATIVE_RELOC 
+.ifndef CROSSDIR
 CHECK_LDSO=c() {					\
 	! readelf -Wr $$1 |				\
 	  egrep -qv '^($$|[ R])| (${RELATIVE_RELOC}) ';	\
 	}; c
+.endif // !CROSSDIR
 .endif
 
 test_prog=	test-$(PROG)
