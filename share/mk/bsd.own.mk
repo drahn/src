@@ -64,12 +64,6 @@ LINKER_VERSION?=bfd
 STATICPIE?=-pie
 .endif
 
-
-.if ${MACHINE_ARCH} == "riscv64"
-NOPIE_FLAGS?=-fno-pie
-NOPIE_LDFLAGS?=-nopie
-.endif
-
 # Executables are always PIC on mips64.
 # Do not pass -fno-pie to the compiler because clang does not accept it.
 .if ${MACHINE_ARCH} == "mips64" || ${MACHINE_ARCH} == "mips64el"
@@ -164,12 +158,6 @@ DEFAULT_PIE_DEF=-DPIE_DEFAULT=2
 DEFAULT_PIE_DEF=-DPIE_DEFAULT=1
 .endif
 
-
-.if ${MACHINE_ARCH} == "riscv64"
-#nopic on RISCV so far
-NOPIC=
-NOPIE=
-.endif
 
 # don't try to generate PROFILED versions of libraries on machines
 # which don't support profiling.
