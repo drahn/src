@@ -78,6 +78,7 @@
 	"	ecall							\n" \
 	".previous");
 
+#ifdef __PIC__
 #define	MD_RCRT0_START							\
 	char **environ, *__progname;					\
 	__asm(								\
@@ -90,13 +91,13 @@
 	"	mv	a0, sp						\n" \
 	"	mv	fp, sp						\n" \
 	"								\n" \
-	"	addi	sp, sp, 8+8+(16*8)				\n" \
+	"	addi	sp, sp, -(8+8+(16*8))				\n" \
 	"	addi	a1, sp, 4					\n" \
 	"								\n" \
-	"#	lui	a2, %hi(_DYNAMIC)				\n" \
-	"#	addi	a2, a2, %lo(_DYNAMIC)				\n" \
+	"1:	auipc	a2, %pcrel_hi(_DYNAMIC)				\n" \
+	"	addi	a2, a2, %pcrel_lo(1b)				\n" \
 	"								\n" \
-	"#	call	_dl_boot_bind					\n" \
+	"	call	_dl_boot_bind					\n" \
 	"								\n" \
 	"	mv	sp, fp						\n" \
 	"	li	fp, 0x0						\n" \
@@ -116,3 +117,32 @@
 	"	ecall							\n" \
 	"	.long 0 // this is illegal isntr?			\n" \
 	".previous");
+#else /* non-pic/pie */
+#define	MD_RCRT0_START							\
+	char **environ, *__progname;					\
+	__asm(								\
+	".text								\n" \
+	"	.align	0						\n" \
+	"	.globl	_start						\n" \
+	"	.globl	__start						\n" \
+	"_start:							\n" \
+	"__start:							\n" \
+	"	mv	a0, sp						\n" \
+	"	li	fp, 0x0						\n" \
+	"								\n" \
+	"	li	a3, 0x0	/* cleanup */				\n" \
+	"/* Get argc/argv/envp from stack */				\n" \
+	"	ld	a0, (sp)					\n" \
+	"	addi	a1, sp, 0x0008					\n" \
+	"	slli	a2, a0, 0x3					\n" \
+	"	add	a2, a1, a2					\n" \
+	"	addi	a2, a2, 0x0008					\n" \
+	"								\n" \
+	"	call	___start					\n" \
+	"								\n" \
+	"_dl_exit:							\n" \
+	"	li	t0, " STR(SYS_exit) "				\n" \
+	"	ecall							\n" \
+	"	.long 0 // this is illegal isntr?			\n" \
+	".previous");
+#endif 
