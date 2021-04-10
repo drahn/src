@@ -26,7 +26,7 @@
  *
  */
 
-#define DL_DATA_SIZE	(16 * 8)	/* XXX */
+#define DL_DATA_SIZE	(16 * 8)	/* needs to be 8(16?) byte aligned */
 #include <machine/asm.h>
 #include <sys/syscall.h>
 
@@ -36,38 +36,37 @@
 	.globl	_dl_start
 	.type	_dl_start,@function
 _dl_start:
-	mv	s11, sp
-	// need to worry about alignment, I think not?
-	addi	sp, sp, -(8+8+DL_DATA_SIZE)	// dl_data size
-	addi	s10, sp, 4			// dl_data
-	mv	x21, ra				// save old lr
+	mv	a0, sp
+	mv	fp, sp
 
-	mv	a0, s11				// original stack
+	addi	sp, sp, -(8+8+DL_DATA_SIZE)	// dl_data size
+	addi	s10, sp, 8			// dl_data
+
 	mv	a1, s10				// dl_data
 
-1:
-	auipc	a2, %pcrel_hi(_DYNAMIC)		/* &_DYNAMIC */
+1:	auipc	a2, %pcrel_hi(_DYNAMIC)		/* &_DYNAMIC */
 	addi	a2, a2, %pcrel_lo(1b)
 
-	nop
-	jal	_dl_boot_bind
-	nop
+	call	_dl_boot_bind
 
-	addi	a0, s11, 8			// argv
-	ld	a1, (s11)			// load argc
-	slli	a1, a1, 3
-	add	a1, a0, a2			// envp = argv + argc * 8
-	addi	a1, a1, 8			//                        + 8
+	ld	a0, (fp)			// load argc
+	addi    a1, fp, 0x0008			// argv
+	slli    a2, a0, 0x3
+	add     a2, a1, a2
+	addi    a2, a2, 0x0008			// compute envp into a2
+
+	// _dl_boot(argv, envp, loff, dl_data)
+	mv	a0, a1				// argv
+	mv	a1, a2				// envp
 	ld	a2, (7*8)(s10)			// loff from dl_data
-
 	mv	a3, s10				// dl_data
+
 	call	_dl_boot
 
-	mv	sp, s11				// move stack back
-	mv	s0, zero			// clear frame back pointer
+	mv	sp, fp				// move stack back
+	mv	fp, zero			// clear frame back pointer
 
-2:
-	auipc	a3, %got_pcrel_hi(_dl_dtors)		/* cleanup */
+2:	auipc	a3, %got_pcrel_hi(_dl_dtors)		/* cleanup */
 	addi	a3, a3, %pcrel_lo(2b)
 
 	jr	a0
@@ -80,7 +79,7 @@ ENTRY(_dl_bind_start)
 	 * return address and pointer to pltgot entry for this
 	 * relocation are on the stack
 	 */
-	mv x17, sp
+	mv	x17, sp
 
 	/* save parameter/result registers */
 	addi	sp, sp, -(16*8)  /* should be aligned well enough */
