@@ -26,8 +26,8 @@ GCC4_ARCH+=mips64
 
 # m88k: ?
 # riscv64: ?
-PIE_ARCH=aarch64 alpha amd64 arm hppa i386 mips64 mips64el powerpc powerpc64 sh sparc64
-STATICPIE_ARCH=aarch64 alpha amd64 arm hppa i386 mips64 mips64el powerpc powerpc64 sh sparc64
+PIE_ARCH=aarch64 alpha amd64 arm hppa i386 mips64 mips64el powerpc powerpc64 riscv64 sh sparc64
+STATICPIE_ARCH=aarch64 alpha amd64 arm hppa i386 mips64 mips64el powerpc powerpc64 riscv64 sh sparc64
 
 .for _arch in ${MACHINE_ARCH}
 .if !empty(GCC3_ARCH:M${_arch})
