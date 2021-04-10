@@ -147,6 +147,7 @@
 >>18	leshort		106		Analog Devices Blackfin,
 >>18	leshort		0x9026		Alpha (unofficial),
 >>18	leshort		183		AArch64,
+>>18	leshort		243		RiscV
 >>20	lelong		0		invalid version
 >>20	lelong		1		version 1
 >>36	lelong		1		MathCoPro/FPU/MAU Required
