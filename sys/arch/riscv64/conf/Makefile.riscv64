@@ -56,7 +56,7 @@ COPTS?=		-Oz
 .endif
 
 DEBUG?=		-g
-COPTS?=		-O0 # XXX Optimization Disabled for Debugging
+COPTS?=		-O2 # XXX Optimization Disabled for Debugging
 CFLAGS=		${DEBUG} ${CWARNFLAGS} ${CMACHFLAGS} ${COPTS} ${PIPE}
 AFLAGS=		-D_LOCORE -x assembler-with-cpp ${CWARNFLAGS} ${CMACHFLAGS}
 LINKFLAGS=	-T ld.script -X --warn-common -no-pie
