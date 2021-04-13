@@ -37,6 +37,8 @@ NEWFSARGS_msdos="-F 16 -L boot"
 MOUNT_ARGS_msdos="-o-l"
 
 md_installboot() {
+	local _disk=/dev/$1
+
 	mount ${MOUNT_ARGS_msdos} ${_disk}i /mnt/mnt
 	mkdir -p /mnt/mnt/efi/boot
 	cp /mnt/usr/mdec/BOOTRISCV64.EFI /mnt/mnt/efi/boot/bootriscv64.efi
