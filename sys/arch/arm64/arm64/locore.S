@@ -402,11 +402,25 @@ cpu_hatch_secondary:
 	/* Get the virt -> phys offset */
 	bl	get_virt_delta
 
+	sevl	/* do not wait on the first iteration */
+retry_core:
+	wfe
+
 	/* Set up CPU info */
 	adr	x0, .Lcpu_hatch_ci
 	ldr	x0, [x0]
 	sub	x0, x0, x29
 	ldr	x0, [x0]
+	cbz	x0, retry_core	/* retry on NULL */
+
+	/* Verify that this core is the one that is being woken up */
+	mrs	x1, MPIDR_EL1
+	ldr	x2, .Lcpu_miprmask
+	and	x2, x1, x2
+	ldr	x1, [x0, #CI_MPIDR ]
+	cmp	x1, x2
+	bne	retry_core
+	
 	ldr	x1, [x0, #CI_SELF]
 	msr	tpidr_el1, x1
 
@@ -431,6 +445,8 @@ cpu_hatch_secondary:
 	.xword	cpu_init_secondary
 .Lcpu_hatch_ci:
 	.xword	cpu_hatch_ci
+.Lcpu_miprmask:
+	.xword	MPIDR_AFF
 
 	.data
 	.align 3
