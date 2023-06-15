@@ -374,6 +374,28 @@ sys_execve(struct proc *p, void *v, register_t *retval)
 		goto bad;
 	}
 
+	if (strncmp(argp, "big-", 4) == 0) {
+		CPU_INFO_ITERATOR cii;
+		struct cpu_info *ci;
+
+		printf(" pinning process to 7\n");
+		CPU_INFO_FOREACH(cii, ci) {
+			if (CPU_INFO_UNIT(ci) == 7)
+				sched_peg_curproc(ci);
+		}
+	}
+
+	if (strncmp(argp, "little-", 7) == 0) {
+		CPU_INFO_ITERATOR cii;
+		struct cpu_info *ci;
+
+		printf(" pinning process to 3\n");
+		CPU_INFO_FOREACH(cii, ci) {
+			if (CPU_INFO_UNIT(ci) == 3)
+				sched_peg_curproc(ci);
+		}
+	}
+	
 #ifdef KTRACE
 	if (KTRPOINT(p, KTR_EXECARGS))
 		ktrexec(p, KTR_EXECARGS, argp, dp - argp);
