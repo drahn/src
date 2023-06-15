@@ -1205,6 +1205,9 @@ cpu_init(void)
 	/* Initialize debug registers. */
 	WRITE_SPECIALREG(mdscr_el1, DBG_MDSCR_TDCC);
 	WRITE_SPECIALREG(oslar_el1, 0);
+
+	/* Enable user access to Performance Monitor */
+	WRITE_SPECIALREG(pmuserenr_el0, 1);
 }
 
 void
