@@ -40,6 +40,7 @@ struct pwmbl_softc {
 	uint32_t		sc_max_level;
 	uint32_t		sc_def_level;
 	struct pwm_state	sc_ps_saved;
+	uint32_t		sc_saved_lvl;
 };
 
 struct pwmbl_softc *sc_pwmbl;
@@ -47,6 +48,10 @@ struct pwmbl_softc *sc_pwmbl;
 int	pwmbl_match(struct device *, void *, void *);
 void	pwmbl_attach(struct device *, struct device *, void *);
 int	pwmbl_activate(struct device *, int);
+void    pwmbl_burner(u_int);
+
+/* if simplefb is available, set the burn hook */
+extern void (*simplefb_burn_hook)(u_int) __attribute__ ((weak));
 
 const struct cfattach pwmbl_ca = {
 	sizeof(struct pwmbl_softc), pwmbl_match, pwmbl_attach, NULL,
@@ -117,11 +122,16 @@ pwmbl_attach(struct device *parent, struct device *self, void *aux)
 
 	printf("\n");
 
+	sc->sc_saved_lvl = sc->sc_def_level;
 	pwmbl_set_brightness(sc, sc->sc_def_level);
 
 	sc_pwmbl = sc;
 	ws_get_param = pwmbl_get_param;
 	ws_set_param = pwmbl_set_param;
+
+	/* if simplefb is available, set the burn hook */
+	if (&simplefb_burn_hook != NULL)
+		simplefb_burn_hook = pwmbl_burner;
 }
 
 int
@@ -225,10 +235,22 @@ pwmbl_set_param(struct wsdisplay_param *dp)
 
 	switch (dp->param) {
 	case WSDISPLAYIO_PARAM_BRIGHTNESS:
+		sc->sc_saved_lvl = dp->curval;
 		if (pwmbl_set_brightness(sc, dp->curval))
 			return -1;
 		return 0;
 	default:
 		return -1;
 	}
+}
+
+void
+pwmbl_burner(u_int on)
+{
+	struct pwmbl_softc *sc = (struct pwmbl_softc *)sc_pwmbl;
+
+	if (on) 
+		pwmbl_set_brightness(sc, sc->sc_saved_lvl);
+	else
+		pwmbl_set_brightness(sc, 0);
 }
