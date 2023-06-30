@@ -224,6 +224,8 @@ void cpu_boot_secondary_processors(void);
 #endif /* !MULTIPROCESSOR */
 
 #define CPU_BUSY_CYCLE()	__asm volatile("yield" : : : "memory")
+#define CPU_LOCK_WAIT()	__asm volatile("wfe" : : : "memory")
+#define CPU_LOCK_WAKE()	__asm volatile("sev" : : : "memory")
 
 #define curpcb		curcpu()->ci_curpcb
 

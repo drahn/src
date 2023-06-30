@@ -111,7 +111,11 @@ __mp_lock_spin(struct __mp_lock *mpl, u_int me)
 
 	spc->spc_spinning++;
 	while (mpl->mpl_ticket != me) {
+#ifdef CPU_BUSY_WAIT
+		CPU_BUSY_WAIT();
+#else
 		CPU_BUSY_CYCLE();
+#endif /* defined(CPU_BUSY_WAIT) */
 
 #ifdef MP_LOCKDEBUG
 		if (--nticks <= 0) {
@@ -166,6 +170,9 @@ __mp_unlock(struct __mp_lock *mpl)
 	if (--cpu->mplc_depth == 0) {
 		membar_exit();
 		mpl->mpl_ticket++;
+#ifdef CPU_LOCK_WAKE
+		CPU_LOCK_WAKE();
+#endif /* defined(CPU_LOCK_WAKE) */
 	}
 	intr_restore(s);
 }
@@ -190,6 +197,9 @@ __mp_release_all(struct __mp_lock *mpl)
 	membar_exit();
 	mpl->mpl_ticket++;
 	intr_restore(s);
+#ifdef CPU_LOCK_WAKE
+		CPU_LOCK_WAKE();
+#endif /* defined(CPU_LOCK_WAKE) */
 
 	return (rv);
 }
@@ -262,7 +272,12 @@ mtx_enter(struct mutex *mtx)
 	spc->spc_spinning++;
 	while (mtx_enter_try(mtx) == 0) {
 		do {
+#ifdef CPU_BUSY_WAIT
+			CPU_BUSY_WAIT();
+#else
 			CPU_BUSY_CYCLE();
+#endif /* defined(CPU_BUSY_WAIT) */
+
 #ifdef MP_LOCKDEBUG
 			if (--nticks == 0) {
 				db_printf("%s: %p lock spun out\n",
@@ -370,6 +385,9 @@ mtx_leave(struct mutex *mtx)
 	mtx->mtx_owner = NULL;
 	if (mtx->mtx_wantipl != IPL_NONE)
 		splx(s);
+#ifdef CPU_LOCK_WAKE
+	CPU_LOCK_WAKE();
+#endif /* defined(CPU_LOCK_WAKE) */
 }
 
 #ifdef DDB
@@ -390,7 +408,11 @@ db_mtx_enter(struct db_mutex *mtx)
 		owner = atomic_cas_ptr(&mtx->mtx_owner, NULL, ci);
 		if (owner == NULL)
 			break;
+#ifdef CPU_BUSY_WAIT
+		CPU_BUSY_WAIT();
+#else
 		CPU_BUSY_CYCLE();
+#endif /* defined(CPU_BUSY_WAIT) */
 	}
 	membar_enter_after_atomic();
 
@@ -421,6 +443,9 @@ db_mtx_leave(struct db_mutex *mtx)
 #endif
 	mtx->mtx_owner = NULL;
 	intr_restore(s);
+#ifdef CPU_LOCK_WAKE
+	CPU_LOCK_WAKE();
+#endif /* defined(CPU_LOCK_WAKE) */
 }
 #endif /* DDB */
 #endif /* __USE_MI_MUTEX */
