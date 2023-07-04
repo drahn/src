@@ -663,6 +663,7 @@ kern_sysctl(int *name, u_int namelen, void *oldp, size_t *oldlenp, void *newp,
 char *hw_vendor, *hw_prod, *hw_uuid, *hw_serial, *hw_ver;
 int allowpowerdown = 1;
 int hw_power = 1;
+int hw_cpucool;
 
 /* morally const values reported by sysctl_bounded_arr */
 static int byte_order = BYTE_ORDER;
@@ -725,6 +726,9 @@ hw_sysctl(int *name, u_int namelen, void *oldp, size_t *oldlenp, void *newp,
 		if (err)
 			return err;
 		return (sysctl_rdint(oldp, oldlenp, newp, cpuspeed));
+	case HW_CPUCOOL:
+		return sysctl_hwcpucool(oldp, oldlenp, newp, newlen);
+
 #ifndef	SMALL_KERNEL
 	case HW_SENSORS:
 		return (sysctl_sensors(name + 1, namelen - 1, oldp, oldlenp,

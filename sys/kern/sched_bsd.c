@@ -575,6 +575,7 @@ int perfpolicy = PERFPOL_AUTO;
 void setperf_auto(void *);
 struct timeout setperf_to = TIMEOUT_INITIALIZER(setperf_auto, NULL);
 extern int hw_power;
+extern int hw_cpucool;
 
 void
 setperf_auto(void *v)
@@ -593,7 +594,7 @@ setperf_auto(void *v)
 	if (cpu_setperf == NULL)
 		return;
 
-	if (hw_power) {
+	if (hw_power && hw_cpucool == 0) {
 		speedup = 1;
 		goto faster;
 	}
@@ -641,6 +642,13 @@ faster:
 	}
 
 	timeout_add_msec(&setperf_to, 100);
+}
+
+int
+sysctl_hwcpucool(void *oldp, size_t *oldlenp, void *newp, size_t newlen)
+{
+	return sysctl_int_bounded(oldp, oldlenp, newp, newlen,
+	    &hw_cpucool, 0, 1);
 }
 
 int

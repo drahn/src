@@ -175,6 +175,7 @@ int sysctl_hwsetperf(void *, size_t *, void *, size_t);
 int sysctl_hwperfpolicy(void *, size_t *, void *, size_t);
 int sysctl_hwsmt(void *, size_t *, void *, size_t);
 int sysctl_hwncpuonline(void);
+int sysctl_hwcpucool(void *, size_t *, void *, size_t);
 
 #ifdef MULTIPROCESSOR
 void sched_start_secondary_cpus(void);
