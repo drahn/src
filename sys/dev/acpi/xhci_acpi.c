@@ -99,6 +99,14 @@ xhci_acpi_attach(struct device *parent, struct device *self, void *aux)
 		return;
 	}
 
+	/* XXX: Attaching on that specific controller resets the Dell XPS 9345 */
+	extern char *hw_prod;
+	if (hw_prod && strcmp(hw_prod, "XPS 13 9345") == 0 &&
+	    strncmp(sc->sc_node->name, "USB3", 4) == 0) {
+		printf(": disabled\n");
+		return;
+	}
+
 	/*
 	 * The Qualcomm dual role controller has the interrupt on a
 	 * child node.  Find it and parse its resources to find the
